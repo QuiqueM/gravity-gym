@@ -35,4 +35,12 @@ return [
         ],
     ],
 
+    'openpay' => [
+        'merchant_id' => env('OPENPAY_ID'),
+        'private_key' => env('OPENPAY_SK'),
+        'public_key' => env('OPENPAY_PK'),
+        'production_mode' => env('OPENPAY_PRODUCTION_MODE', false),
+        'endpoint' => env('OPENPAY_ENVIROMENT', 'https://sandbox-api.openpay.mx/v1/'),
+    ],
+
 ];
