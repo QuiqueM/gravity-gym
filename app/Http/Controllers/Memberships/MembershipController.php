@@ -9,6 +9,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
+use App\Http\Requests\MembershipPlanRequest;
 
 class MembershipController extends Controller
 {
@@ -35,6 +36,34 @@ class MembershipController extends Controller
         Membership::create($validated);
 
         return back()->with('success', 'Membresía creada');
+    }
+
+    public function createMembershipPlan(): Response
+    {
+        return Inertia::render('memberships/Create');
+    }
+
+    public function storeMembershipPlan(MembershipPlanRequest $request): RedirectResponse
+    {
+        $validated = $request->validated();
+        MembershipPlan::create($validated);
+
+        return to_route('memberships.index')->with('success', 'Plan de membresía creado');
+    }
+
+    public function edit(MembershipPlan $plan): Response
+    {
+        return Inertia::render('memberships/Edit', [
+            'plan' => $plan,
+        ]);
+    }
+
+    public function update(MembershipPlanRequest $request, MembershipPlan $plan): RedirectResponse
+    {
+        $validated = $request->validated();
+        $plan->update($validated);
+
+        return to_route('memberships.index')->with('success', 'Plan de membresía actualizado');
     }
 }
 

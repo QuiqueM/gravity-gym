@@ -21,16 +21,7 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
-        'role',
         'phone',
-        'birthdate',
-        'gender',
-        'address_line',
-        'city',
-        'state',
-        'zip',
-        'emergency_contact_name',
-        'emergency_contact_phone',
     ];
 
     /**
@@ -53,7 +44,11 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
-            'birthdate' => 'date',
         ];
+    }
+
+    public function roles()
+    {
+        return $this->belongsToMany(Role::class);
     }
 }

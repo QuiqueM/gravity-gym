@@ -1,27 +1,10 @@
 <script setup lang="ts">
-// @ts-nocheck
 import AppLayout from '@/layouts/AppLayout.vue';
 import { Head, Link } from '@inertiajs/vue3';
 import type { BreadcrumbItem } from '@/types';
 import Button from '@/components/ui/button/Button.vue';
-
-interface Plan {
-    id: number;
-    name: string;
-    description?: string;
-    duration_days: number;
-    class_limit_per_week?: number | null;
-    price: string | number;
-}
-
-interface MembershipItem {
-    id: number;
-    user: { id: number; name: string };
-    plan: { id: number; name: string };
-    starts_at: string;
-    ends_at: string;
-    status: string;
-}
+import type { MembershipItem, Plan } from '@/types/membership';
+import Icon from '@/components/Icon.vue';
 
 defineProps<{
     plans: Plan[];
@@ -40,13 +23,18 @@ const breadcrumbs: BreadcrumbItem[] = [
         <div class="p-4 space-y-6">
             <div class="flex items-center justify-between">
                 <h1 class="text-xl font-semibold">Planes</h1>
-                <Link href="/settings/appearance">
+                <Link :href="route('memberships-plan.create')">
                     <Button size="sm">Configurar</Button>
                 </Link>
             </div>
             <div class="grid gap-4 md:grid-cols-3">
                 <div v-for="plan in plans" :key="plan.id" class="rounded-xl border p-4">
-                    <div class="font-medium">{{ plan.name }}</div>
+                    <div class="font-medium flex justify-between items-center">
+                        <span>{{ plan.name }}</span>
+                        <Link :href="route('memberships-plan.edit', plan.id)">
+                            <Icon name="Edit" />
+                        </Link>
+                    </div>
                     <div class="text-sm text-muted-foreground">{{ plan.description }}</div>
                     <div class="mt-2 text-sm">Duración: {{ plan.duration_days }} días</div>
                     <div class="mt-1 text-sm">Precio: ${{ plan.price }}</div>

@@ -6,18 +6,15 @@ use App\Http\Controllers\Memberships\MembershipController;
 use App\Http\Controllers\Classes\ClassController;
 use App\Http\Controllers\Attendance\AttendanceController;
 use App\Http\Controllers\Payments\OpenPayController;
+use App\Http\Controllers\Dashboard\DashboardController;
 
 Route::get('/', function () {
     return Inertia::render('Welcome');
 })->name('home');
 
-Route::get('dashboard', function () {
-    return Inertia::render('Dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
-
 Route::middleware(['auth', 'verified'])->group(function () {
+    Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::get('memberships', [MembershipController::class, 'index'])->name('memberships.index');
-    Route::post('memberships', [MembershipController::class, 'store'])->name('memberships.store');
 
     Route::get('classes', [ClassController::class, 'index'])->name('classes.index');
     Route::get('classes/{class}/schedules', [ClassController::class, 'schedules'])->name('classes.schedules');
@@ -33,3 +30,4 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
 require __DIR__.'/settings.php';
 require __DIR__.'/auth.php';
+require __DIR__.'/admin.php';
