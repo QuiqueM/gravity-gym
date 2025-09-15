@@ -34,6 +34,7 @@ export interface User {
     created_at: string;
     updated_at: string;
     roles: string[];
+    phone: string
 }
 
 export type BreadcrumbItemType = BreadcrumbItem;
