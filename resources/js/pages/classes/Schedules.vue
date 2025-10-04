@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import AppLayout from '@/layouts/AppLayout.vue';
-import { Head } from '@inertiajs/vue3';
-import type { BreadcrumbItem } from '@/types';
+import { Head, router } from '@inertiajs/vue3';
+import type { Auth, BreadcrumbItem } from '@/types';
 import { useDates } from '@/composables/useDates';
 import { Button } from '@/components/ui/button';
 import Icon from '@/components/Icon.vue';
@@ -13,10 +13,11 @@ import { ref } from 'vue';
 const props = defineProps<{
   classSelected: { id: number; title: string; type?: { name: string } };
   schedules: { id: number; starts_at: string; ends_at: string; room?: string }[];
+  auth: Auth
 }>();
 
 const { formatDateTime } = useDates();
-const { isAdmin } = useRole();
+const { isAdmin, isMember } = useRole(props.auth.user.roles);
 
 const breadcrumbs: BreadcrumbItem[] = [
   { title: 'Dashboard', href: '/dashboard' },
@@ -24,12 +25,20 @@ const breadcrumbs: BreadcrumbItem[] = [
   { title: 'Horarios', href: '#' },
 ];
 const toggleConfirmationModal = ref(false);
+const toggleAttendModal = ref(false);
 const scheduleSelected = ref<{ id: number; starts_at: string; ends_at: string; room?: string } | null>(null);
 
-const selectScheduleForDeletion = (s: { id: number; starts_at: string; ends_at: string; room?: string }) => {
-  console.log('Seleccionar horario para eliminación:', s);
-  scheduleSelected.value = s;
-  toggleConfirmationModal.value = true;
+const selectSchedule = (schedule: { id: number; starts_at: string; ends_at: string; room?: string }, action: string) => {
+  const handleDialogActions: Record<string, () => void> = {
+    delete: () => {
+      toggleConfirmationModal.value = true;
+    },
+    attend: () => {
+      toggleAttendModal.value = true;
+    },
+  };
+  scheduleSelected.value = schedule;
+  handleDialogActions[action]?.();
 };
 
 const destroy = () => {
@@ -42,6 +51,26 @@ const destroy = () => {
     }
   } catch (error) {
     toast.error('Ocurrió un error al eliminar el horario');
+    console.error(error);
+  }
+};
+
+const attend = () => {
+  try {
+    if (scheduleSelected.value) {
+      router.post(route('classes.schedules.attend', scheduleSelected.value.id),{},{
+        onSuccess: () => {
+          scheduleSelected.value = null;
+          toggleAttendModal.value = false;
+          toast.success('Asistencia confirmada exitosamente');
+        },
+        onError: (error) => {
+          toast.error(error.error);
+        }
+      });
+    }
+  } catch (error) {
+    toast.error('Ocurrió un error al confirmar la asistencia');
     console.error(error);
   }
 };
@@ -59,18 +88,26 @@ const destroy = () => {
             <span class="font-medium">{{ formatDateTime(s.starts_at) }} → {{ formatDateTime(s.ends_at) }}</span>
             <span class="text-sm text-muted-foreground">Lugar: {{ s.room || '—' }}</span>
           </div>
-          <div>
-            <Button v-if="isAdmin" variant="destructive" size="sm" @click="selectScheduleForDeletion(s)"><Icon name="Trash" /></Button>
+          <div class="flex gap-2 items-center">
+            <Button v-if="isAdmin" variant="destructive" size="sm" @click="selectSchedule(s, 'delete')"><Icon name="Trash" /></Button>
+            <Button v-if="isMember" size="sm" @click="selectSchedule(s, 'attend')">Asistir</Button>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- Confirmation Dialog -->
+    <!-- Confirmation Delete -->
     <DialogConfirm v-model="toggleConfirmationModal" @confirm="destroy">
       <template #title>¿Estás seguro de eliminar el horario?</template>
       <template #description>
         Esta acción no se puede deshacer. Esto eliminará permanentemente el horario.
+      </template>
+    </DialogConfirm>
+    <!-- Confirmation Attend -->
+    <DialogConfirm v-model="toggleAttendModal" @confirm="attend">
+      <template #title>¿Estás seguro de asistir al horario?</template>
+      <template #description>
+        Esto confirmará tu asistencia al horario.
       </template>
     </DialogConfirm>
   </AppLayout>

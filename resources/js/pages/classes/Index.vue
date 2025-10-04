@@ -1,13 +1,29 @@
 <script setup lang="ts">
+import { computed } from 'vue';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { Head, Link } from '@inertiajs/vue3';
-import type { BreadcrumbItem } from '@/types';
+import type { Auth, BreadcrumbItem } from '@/types';
 import { Button } from '@/components/ui/button';
+import { useRole } from '@/composables/useRole';
+import type { TypeClass, Classes } from '@/types/Class';
+import type { Pagination } from '@/types';
 
-defineProps<{
-  types: { id: number; name: string }[];
-  classes: { data: { id: number; title: string; type?: { name: string } }[] };
+const props = defineProps<{
+  types: TypeClass[];
+  classes: Pagination<Classes>;
+  auth: Auth
 }>();
+
+const { isAdmin, isCoach } = useRole(props.auth.user.roles);
+
+const permissions = computed(() => {
+  return {
+    canCreateClass: isAdmin.value || isCoach.value,
+    canCreateCategory: isAdmin.value,
+    canSeeCategories: isAdmin.value || isCoach.value,
+    canAssignSchedules: isAdmin.value || isCoach.value,
+  };
+});
 
 const breadcrumbs: BreadcrumbItem[] = [
   { title: 'Dashboard', href: '/dashboard' },
@@ -19,11 +35,11 @@ const breadcrumbs: BreadcrumbItem[] = [
   <Head title="Clases" />
   <AppLayout :breadcrumbs="breadcrumbs">
     <div class="p-4 space-y-6">
-      <div>
-        <div class="flex justify-between items-center mb-2">
+      <div v-if="permissions.canSeeCategories" class="space-y-4">
+        <div class="flex justify-between items-center">
           <h2 class="text-xl font-semibold">Categorias</h2>
-          <Link :href="route('classes.type.create')">
-            <Button size="sm">Nueva categoria</Button>
+          <Link v-if="permissions.canCreateCategory" :href="route('classes.type.create')">
+          <Button size="sm">Añadir</Button>
           </Link>
         </div>
         <div class="grid gap-4 md:grid-cols-3">
@@ -33,11 +49,11 @@ const breadcrumbs: BreadcrumbItem[] = [
         </div>
       </div>
 
-      <div>
-         <div class="flex justify-between items-center mb-2">
-          <h2 class="text-xl font-semibold">Listado</h2>
-          <Link :href="route('classes.create')">
-            <Button size="sm">Nueva clase</Button>
+      <div class="space-y-4">
+        <div class="flex justify-between items-center ">
+          <h2 class="text-xl font-semibold">Clases</h2>
+          <Link v-if="permissions.canCreateClass" :href="route('classes.create')">
+          <Button size="sm">Nueva clase</Button>
           </Link>
         </div>
         <div class="rounded-xl border divide-y">
@@ -47,7 +63,8 @@ const breadcrumbs: BreadcrumbItem[] = [
               <div class="text-sm text-muted-foreground">{{ item.type?.name }}</div>
             </div>
             <div class="flex gap-x-2">
-              <Link :href="`/classes/${item.id}/schedules/create`" class="text-primary">Asignar horarios</Link>
+              <Link v-if="permissions.canAssignSchedules" :href="`/classes/${item.id}/schedules/create`"
+                class="text-primary">Asignar horarios</Link>
               <span class="text-gray-500">|</span>
               <Link :href="`/classes/${item.id}/schedules`" class="text-primary">Ver horarios</Link>
             </div>

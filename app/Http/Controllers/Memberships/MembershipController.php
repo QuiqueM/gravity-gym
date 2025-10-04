@@ -13,11 +13,29 @@ use App\Http\Requests\MembershipPlanRequest;
 
 class MembershipController extends Controller
 {
-    public function index(): Response
+    public function index(Request $request): Response
     {
+        $query = Membership::query();
+
+        if ($request->filled('filter')) {
+            switch ($request->filter) {
+                case 'active':
+                    $query->where('status', 'active');
+                    break;
+                case 'expiring':
+                    $query->where('status', 'active')
+                        ->whereDate('ends_at', '>', now())
+                        ->whereDate('ends_at', '<=', now()->addDays(5));
+                    break;
+                case 'expired':
+                    $query->where('status', 'expired');
+                    break;
+            }
+        }
+
         return Inertia::render('memberships/Index', [
             'plans' => MembershipPlan::query()->where('is_active', true)->orderBy('price')->get(),
-            'memberships' => Membership::with(['user', 'plan'])->latest()->paginate(15),
+            'memberships' => $query->with(['user', 'plan'])->latest()->paginate(15),
         ]);
     }
 
@@ -64,6 +82,16 @@ class MembershipController extends Controller
         $plan->update($validated);
 
         return to_route('memberships.index')->with('success', 'Plan de membresía actualizado');
+    }
+
+    public function myMembership(): Response
+    {
+        $user = auth()->user();
+        $membership = Membership::with('plan')->where('user_id', $user->id)->latest()->first();
+
+        return Inertia::render('memberships/MyMembership', [
+            'membership' => $membership,
+        ]);
     }
 }
 

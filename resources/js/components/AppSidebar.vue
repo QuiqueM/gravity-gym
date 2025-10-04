@@ -1,59 +1,62 @@
 <script setup lang="ts">
-// @ts-nocheck
-import NavFooter from '@/components/NavFooter.vue';
 import NavMain from '@/components/NavMain.vue';
 import NavUser from '@/components/NavUser.vue';
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar';
 import { type NavItem } from '@/types';
 import { Link } from '@inertiajs/vue3';
-import { BookOpen, Folder, LayoutGrid, Users2, CalendarClock, CheckCircle2, CreditCard, IdCard } from 'lucide-vue-next';
+import { LayoutGrid, Users2, CalendarClock, CheckCircle2, CreditCard, IdCard } from 'lucide-vue-next';
 import AppLogo from './AppLogo.vue';
+import { usePage } from '@inertiajs/vue3'
+import { useRole } from '@/composables/useRole';
+const user = usePage().props.auth.user
+
+const { isAdmin, isCoach, isMember } = useRole(user.roles)
 
 const mainNavItems: NavItem[] = [
     {
         title: 'Dashboard',
         href: '/dashboard',
         icon: LayoutGrid,
+        isVisible: true,
     },
     {
         title: 'Membresías',
         href: '/memberships',
         icon: IdCard,
+        isVisible: isAdmin.value,
+    },
+    {
+        title: 'Tu Membresía',
+        href: '/my-membership',
+        icon: IdCard,
+        isVisible: isMember.value,
     },
     {
         title: 'Clases',
         href: '/classes',
         icon: CalendarClock,
+        isVisible: true,
     },
     {
         title: 'Asistencias',
         href: '/attendance',
         icon: CheckCircle2,
+        isVisible: isAdmin.value || isCoach.value,
     },
     {
         title: 'Pagos (OpenPay)',
         href: '/payments/openpay',
         icon: CreditCard,
+        isVisible: isAdmin.value,
     },
     {
         title: 'Usuarios',
         href: '/users',
         icon: Users2,
+        isVisible: isAdmin.value,
     },
 ];
 
-const footerNavItems: NavItem[] = [
-    {
-        title: 'Github Repo',
-        href: 'https://github.com/laravel/vue-starter-kit',
-        icon: Folder,
-    },
-    {
-        title: 'Documentation',
-        href: 'https://laravel.com/docs/starter-kits#vue',
-        icon: BookOpen,
-    },
-];
 </script>
 
 <template>
@@ -75,7 +78,6 @@ const footerNavItems: NavItem[] = [
         </SidebarContent>
 
         <SidebarFooter>
-            <NavFooter :items="footerNavItems" />
             <NavUser />
         </SidebarFooter>
     </Sidebar>

@@ -1,7 +1,7 @@
 <?php
 
 return [
-
+    
     /*
     |--------------------------------------------------------------------------
     | Third Party Services
@@ -13,28 +13,28 @@ return [
     | a conventional file to locate the various service credentials.
     |
     */
-
+    
     'postmark' => [
         'token' => env('POSTMARK_TOKEN'),
     ],
-
+    
     'ses' => [
         'key' => env('AWS_ACCESS_KEY_ID'),
         'secret' => env('AWS_SECRET_ACCESS_KEY'),
         'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
     ],
-
+    
     'resend' => [
         'key' => env('RESEND_KEY'),
     ],
-
+    
     'slack' => [
         'notifications' => [
             'bot_user_oauth_token' => env('SLACK_BOT_USER_OAUTH_TOKEN'),
             'channel' => env('SLACK_BOT_USER_DEFAULT_CHANNEL'),
         ],
     ],
-
+    
     'openpay' => [
         'merchant_id' => env('OPENPAY_ID'),
         'private_key' => env('OPENPAY_SK'),
@@ -42,5 +42,9 @@ return [
         'production_mode' => env('OPENPAY_PRODUCTION_MODE', false),
         'endpoint' => env('OPENPAY_ENVIROMENT', 'https://sandbox-api.openpay.mx/v1/'),
     ],
-
+    
+    'mercadopago' => [
+        'token' => env('MERCADOPAGO_ACCESS_TOKEN'),
+        'public_key' => env('MERCADOPAGO_PUBLIC_KEY'),
+    ],
 ];

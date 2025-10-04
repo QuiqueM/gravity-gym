@@ -13,7 +13,7 @@ const props = defineProps<{
   auth: Auth;
 }>();
 
-const { isAdmin } = useRole();
+const { isAdmin } = useRole(props.auth.user.roles);
 
 const breadcrumbs: BreadcrumbItem[] = [
   {
@@ -23,7 +23,7 @@ const breadcrumbs: BreadcrumbItem[] = [
 ];
 
 const handleDashboard = computed(() => {
-  if (isAdmin(props.auth.user.roles)) {
+  if (isAdmin.value) {
     return DashboardAdmin;
   }
   return DashboardMember;

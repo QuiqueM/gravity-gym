@@ -45,5 +45,6 @@
     </head>
     <body class="font-sans antialiased">
         @inertia
+        <script src="https://sdk.mercadopago.com/js/v2"></script>
     </body>
 </html>

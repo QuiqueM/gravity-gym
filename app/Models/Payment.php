@@ -12,17 +12,21 @@ class Payment extends Model
 
     protected $fillable = [
         'user_id',
-        'membership_id',
+        'membership_plan_id',
         'amount',
         'currency',
-        'provider',
-        'provider_charge_id',
+        'payment_method',
         'status',
-        'meta',
+        'external_id',
+        'external_reference',
+        'external_status',
+        'processed_at',
+        'metadata',
     ];
 
     protected $casts = [
-        'meta' => 'array',
+        'metadata' => 'array',
+        'processed_at' => 'datetime',
     ];
 
     public function user(): BelongsTo
@@ -30,9 +34,38 @@ class Payment extends Model
         return $this->belongsTo(User::class);
     }
 
+    public function membershipPlan(): BelongsTo
+    {
+        return $this->belongsTo(MembershipPlan::class);
+    }
+
     public function membership(): BelongsTo
     {
         return $this->belongsTo(Membership::class);
+    }
+
+    /**
+     * Scope para pagos aprobados
+     */
+    public function scopeApproved($query)
+    {
+        return $query->where('status', 'approved');
+    }
+
+    /**
+     * Scope para pagos pendientes
+     */
+    public function scopePending($query)
+    {
+        return $query->where('status', 'pending');
+    }
+
+    /**
+     * Scope para pagos fallidos
+     */
+    public function scopeFailed($query)
+    {
+        return $query->where('status', 'rejected');
     }
 }
 

@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { Head, Link } from '@inertiajs/vue3';
 import NavBar from '@/components/navbar/NavBar.vue';
+import MembershipCard from '@/components/MembershipCard/MembershipCard.vue';
 </script>
 
 <template>
@@ -298,118 +299,26 @@ import NavBar from '@/components/navbar/NavBar.vue';
             </div>
             <h2 class="text-white text-[22px] font-bold leading-tight tracking-[-0.015em] px-4 pb-3 pt-5">Membership Options</h2>
             <div class="grid grid-cols-[repeat(auto-fit,minmax(228px,1fr))] gap-2.5 px-4 py-3 @3xl:grid-cols-4">
-              <div class="flex flex-1 flex-col gap-4 rounded-xl border border-solid border-[#54453b] bg-[#27201c] p-6">
-                <div class="flex flex-col gap-1">
-                  <h1 class="text-white text-base font-bold leading-tight">Basic</h1>
-                  <p class="flex items-baseline gap-1 text-white">
-                    <span class="text-white text-4xl font-black leading-tight tracking-[-0.033em]">$29</span>
-                    <span class="text-white text-base font-bold leading-tight">/month</span>
-                  </p>
-                </div>
-                <button
-                  class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-full h-10 px-4 bg-[#392f28] text-white text-sm font-bold leading-normal tracking-[0.015em]"
-                >
-                  <span class="truncate">Join Now</span>
-                </button>
-                <div class="flex flex-col gap-2">
-                  <div class="text-[13px] font-normal leading-normal flex gap-3 text-white">
-                    <div class="text-white" data-icon="Check" data-size="20px" data-weight="regular">
-                      <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" fill="currentColor" viewBox="0 0 256 256">
-                        <path d="M229.66,77.66l-128,128a8,8,0,0,1-11.32,0l-56-56a8,8,0,0,1,11.32-11.32L96,188.69,218.34,66.34a8,8,0,0,1,11.32,11.32Z"></path>
-                      </svg>
-                    </div>
-                    Access to gym facilities
-                  </div>
-                  <div class="text-[13px] font-normal leading-normal flex gap-3 text-white">
-                    <div class="text-white" data-icon="Check" data-size="20px" data-weight="regular">
-                      <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" fill="currentColor" viewBox="0 0 256 256">
-                        <path d="M229.66,77.66l-128,128a8,8,0,0,1-11.32,0l-56-56a8,8,0,0,1,11.32-11.32L96,188.69,218.34,66.34a8,8,0,0,1,11.32,11.32Z"></path>
-                      </svg>
-                    </div>
-                    Group fitness classes
-                  </div>
-                </div>
-              </div>
-              <div class="flex flex-1 flex-col gap-4 rounded-xl border border-solid border-[#54453b] bg-[#27201c] p-6">
-                <div class="flex flex-col gap-1">
-                  <h1 class="text-white text-base font-bold leading-tight">Premium</h1>
-                  <p class="flex items-baseline gap-1 text-white">
-                    <span class="text-white text-4xl font-black leading-tight tracking-[-0.033em]">$49</span>
-                    <span class="text-white text-base font-bold leading-tight">/month</span>
-                  </p>
-                </div>
-                <button
-                  class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-full h-10 px-4 bg-[#392f28] text-white text-sm font-bold leading-normal tracking-[0.015em]"
-                >
-                  <span class="truncate">Join Now</span>
-                </button>
-                <div class="flex flex-col gap-2">
-                  <div class="text-[13px] font-normal leading-normal flex gap-3 text-white">
-                    <div class="text-white" data-icon="Check" data-size="20px" data-weight="regular">
-                      <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" fill="currentColor" viewBox="0 0 256 256">
-                        <path d="M229.66,77.66l-128,128a8,8,0,0,1-11.32,0l-56-56a8,8,0,0,1,11.32-11.32L96,188.69,218.34,66.34a8,8,0,0,1,11.32,11.32Z"></path>
-                      </svg>
-                    </div>
-                    All Basic features
-                  </div>
-                  <div class="text-[13px] font-normal leading-normal flex gap-3 text-white">
-                    <div class="text-white" data-icon="Check" data-size="20px" data-weight="regular">
-                      <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" fill="currentColor" viewBox="0 0 256 256">
-                        <path d="M229.66,77.66l-128,128a8,8,0,0,1-11.32,0l-56-56a8,8,0,0,1,11.32-11.32L96,188.69,218.34,66.34a8,8,0,0,1,11.32,11.32Z"></path>
-                      </svg>
-                    </div>
-                    Personal training sessions
-                  </div>
-                  <div class="text-[13px] font-normal leading-normal flex gap-3 text-white">
-                    <div class="text-white" data-icon="Check" data-size="20px" data-weight="regular">
-                      <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" fill="currentColor" viewBox="0 0 256 256">
-                        <path d="M229.66,77.66l-128,128a8,8,0,0,1-11.32,0l-56-56a8,8,0,0,1,11.32-11.32L96,188.69,218.34,66.34a8,8,0,0,1,11.32,11.32Z"></path>
-                      </svg>
-                    </div>
-                    Exclusive classes
-                  </div>
-                </div>
-              </div>
-              <div class="flex flex-1 flex-col gap-4 rounded-xl border border-solid border-[#54453b] bg-[#27201c] p-6">
-                <div class="flex flex-col gap-1">
-                  <h1 class="text-white text-base font-bold leading-tight">Elite</h1>
-                  <p class="flex items-baseline gap-1 text-white">
-                    <span class="text-white text-4xl font-black leading-tight tracking-[-0.033em]">$79</span>
-                    <span class="text-white text-base font-bold leading-tight">/month</span>
-                  </p>
-                </div>
-                <button
-                  class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-full h-10 px-4 bg-[#392f28] text-white text-sm font-bold leading-normal tracking-[0.015em]"
-                >
-                  <span class="truncate">Join Now</span>
-                </button>
-                <div class="flex flex-col gap-2">
-                  <div class="text-[13px] font-normal leading-normal flex gap-3 text-white">
-                    <div class="text-white" data-icon="Check" data-size="20px" data-weight="regular">
-                      <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" fill="currentColor" viewBox="0 0 256 256">
-                        <path d="M229.66,77.66l-128,128a8,8,0,0,1-11.32,0l-56-56a8,8,0,0,1,11.32-11.32L96,188.69,218.34,66.34a8,8,0,0,1,11.32,11.32Z"></path>
-                      </svg>
-                    </div>
-                    All Premium features
-                  </div>
-                  <div class="text-[13px] font-normal leading-normal flex gap-3 text-white">
-                    <div class="text-white" data-icon="Check" data-size="20px" data-weight="regular">
-                      <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" fill="currentColor" viewBox="0 0 256 256">
-                        <path d="M229.66,77.66l-128,128a8,8,0,0,1-11.32,0l-56-56a8,8,0,0,1,11.32-11.32L96,188.69,218.34,66.34a8,8,0,0,1,11.32,11.32Z"></path>
-                      </svg>
-                    </div>
-                    Unlimited personal training
-                  </div>
-                  <div class="text-[13px] font-normal leading-normal flex gap-3 text-white">
-                    <div class="text-white" data-icon="Check" data-size="20px" data-weight="regular">
-                      <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" fill="currentColor" viewBox="0 0 256 256">
-                        <path d="M229.66,77.66l-128,128a8,8,0,0,1-11.32,0l-56-56a8,8,0,0,1,11.32-11.32L96,188.69,218.34,66.34a8,8,0,0,1,11.32,11.32Z"></path>
-                      </svg>
-                    </div>
-                    VIP access
-                  </div>
-                </div>
-              </div>
+              <MembershipCard
+                title="Premium"
+                :price="49"
+                frequency="month"
+                :characteristics="[
+                  'All Basic features',
+                  'Personalized training plan',
+                  'Nutritionist consultation',
+                ]"
+              />    
+              <MembershipCard
+                title="Basic"
+                :price="29"
+                frequency="month"
+                :characteristics="[
+                  'Access to all gym equipment',
+                  'Unlimited group classes',
+                  'Free fitness assessment',
+                ]"
+              />
             </div>
           </div>
         </div>
