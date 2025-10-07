@@ -34,7 +34,7 @@ interface Props {
   memberships_plan: Plan[];
 }
 
-const { formatDate, now } = useDates();
+const { formatDate } = useDates();
 const { getInitials } = useInitials();
 
 const props = defineProps<Props>();
@@ -48,7 +48,6 @@ const showSheet = ref(false);
 const form = useForm({
   user_id: props.user.id,
   membership_plan_id: null,
-  starts_at: now().format('YYYY-MM-DD'),
 })
 
 const formAvatar = useForm({

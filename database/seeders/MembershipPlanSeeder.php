@@ -18,6 +18,7 @@ class MembershipPlanSeeder extends Seeder
             'price' => 0.00,
             'requires_payment' => false,
             'is_active' => true,
+            'is_membership_initial' => true,
         ],
     ];
     foreach ($plans as $plan) {

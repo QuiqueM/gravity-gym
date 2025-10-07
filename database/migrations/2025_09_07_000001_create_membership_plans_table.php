@@ -17,6 +17,7 @@ return new class extends Migration
             $table->decimal('price', 8, 2);
             $table->boolean('requires_payment')->default(true);
             $table->boolean('is_active')->default(true);
+            $table->boolean('is_membership_initial')->default(false);
             $table->timestamps();
         });
     }

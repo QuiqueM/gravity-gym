@@ -16,6 +16,7 @@ class Membership extends Model
         'starts_at',
         'ends_at',
         'status',
+        'remaining_classes',
     ];
 
     protected $casts = [

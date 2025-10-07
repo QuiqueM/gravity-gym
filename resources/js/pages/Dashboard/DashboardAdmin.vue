@@ -21,10 +21,10 @@ const selectedAmount = ref(0);
       <PlaceholderPattern />
     </div>
   </div>
-  <MercadoPagoMembershipModal
+  <!-- <MercadoPagoMembershipModal
     :open="showMembershipModal"
     :plan="selectedPlan"
     :amount="selectedAmount"
     @close="showMembershipModal = false"
-  />
+  /> -->
 </template>

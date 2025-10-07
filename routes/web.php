@@ -34,6 +34,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     
     Route::get('profile', [UserController::class, 'editProfile'])->name('profile.edit');
     Route::post('profile/avatar', [UserController::class, 'updateAvatarProfile'])->name('profile.avatar.update');
+    Route::patch('profile/{user}', [UserController::class, 'update'])->name('profile.update');
+    Route::delete('profile/{user}', [UserController::class, 'destroy'])->name('profile.destroy');
 
     Route::get('my-membership', [MembershipController::class, 'myMembership'])->name('membership.my.show');
 

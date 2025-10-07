@@ -2,12 +2,17 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use App\Notifications\CustomVerifyEmail;
+use App\Notifications\CustomResetPasswordNotification;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Database\Eloquent\Casts\Attribute;
+use Illuminate\Support\Str;
 
-class User extends Authenticatable
+class User extends Authenticatable implements MustVerifyEmail
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable;
@@ -22,6 +27,7 @@ class User extends Authenticatable
         'email',
         'password',
         'phone',
+        'avatar',
     ];
 
     /**
@@ -104,5 +110,32 @@ class User extends Authenticatable
             ->where('status', 'active')
             ->where('end_date', '>', now())
             ->first();
+    }
+
+    /**
+     * Envía la notificación de verificación de correo electrónico.
+     */
+    public function sendEmailVerificationNotification(): void
+    {
+        // En lugar de usar la notificación por defecto,
+        $this->notify(new CustomVerifyEmail);
+    }
+
+    /**
+     * Envía la notificación de restablecimiento de contraseña.
+     *
+     * @param  string  $token
+     * @return void
+     */
+    public function sendPasswordResetNotification($token): void
+    {
+        $this->notify(new CustomResetPasswordNotification($token));
+    }
+    
+    protected function avatar(): Attribute
+    {
+        return Attribute::make(
+            get: fn ($value) => Storage::url($value),
+        );
     }
 }

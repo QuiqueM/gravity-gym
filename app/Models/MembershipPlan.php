@@ -18,6 +18,7 @@ class MembershipPlan extends Model
         'price',
         'requires_payment',
         'is_active',
+        'is_membership_initial',
     ];
 
     public function memberships(): HasMany

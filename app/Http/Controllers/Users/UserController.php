@@ -9,7 +9,6 @@ use App\Models\MembershipPlan;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rules;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Storage;
 
 class UserController extends Controller
 {
@@ -84,7 +83,14 @@ class UserController extends Controller
      */
     public function update(Request $request, user $user)
     {
-        //
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'phone' => 'required|string|min:10|max:20|unique:users,phone,'.$user->id.',id',
+        ]);
+
+        $user->update($request->only('name', 'phone'));
+
+        return to_route('profile.edit');
     }
 
     /**
@@ -99,7 +105,6 @@ class UserController extends Controller
     public function editProfile()
     {
         $user = auth()->user()->load('roles', 'membership.plan');
-        $user->avatar = $user->avatar ? Storage::url($user->avatar) : null;
         $memberships_plan = MembershipPlan::where('is_active', true)->get();
         return inertia('Users/Profile', ['user' => $user, 'memberships_plan' => $memberships_plan]);
     }
@@ -113,9 +118,10 @@ class UserController extends Controller
         $user = auth()->user();
 
         if ($request->hasFile('avatar')) {
-            // Guardar en S3
-            $path = Storage::put('avatars', $request->file('avatar'));
-            // Puedes guardar la ruta en el usuario si lo necesitas
+            $uuid = (string) \Illuminate\Support\Str::uuid();
+            $extension = $request->file('avatar')->getClientOriginalExtension();
+            $filename = $uuid . '.' . $extension;
+            $path = $request->file('avatar')->storeAs('avatars', $filename, 's3');
             $user->avatar = $path;
             $user->save();
         }

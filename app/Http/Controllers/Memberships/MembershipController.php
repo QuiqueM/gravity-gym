@@ -44,12 +44,13 @@ class MembershipController extends Controller
         $validated = $request->validate([
             'user_id' => ['required', 'exists:users,id'],
             'membership_plan_id' => ['required', 'exists:membership_plans,id'],
-            'starts_at' => ['required', 'date'],
         ]);
 
         $plan = MembershipPlan::findOrFail($validated['membership_plan_id']);
-        $validated['ends_at'] = \Carbon\Carbon::parse($validated['starts_at'])->addDays($plan->duration_days);
+        $validated['starts_at'] = now();
+        $validated['ends_at'] = now()->addDays($plan->duration_days);
         $validated['status'] = 'active';
+        $validated['remaining_classes'] = $plan->class_limit;
 
         Membership::create($validated);
 

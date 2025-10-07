@@ -13,6 +13,8 @@ use Illuminate\Validation\Rules;
 use Inertia\Inertia;
 use Inertia\Response;
 use App\Models\Role;
+use App\Models\MembershipPlan;
+use App\Models\Membership;
 
 class RegisteredUserController extends Controller
 {
@@ -49,6 +51,18 @@ class RegisteredUserController extends Controller
         $memberRole = Role::where('name', 'Member')->first();
         if ($memberRole) {
             $user->roles()->attach($memberRole->id);
+        }
+        // Asignar el plan de membresía inicial al usuario registrado
+        $initialPlan = MembershipPlan::where('is_membership_initial', true)->first();
+        if ($initialPlan) {
+            Membership::create([
+                'user_id' => $user->id,
+                'membership_plan_id' => $initialPlan->id,
+                'start_date' => now(),
+                'end_date' => now()->addDays($initialPlan->duration_days),
+                'is_active' => true,
+                'remaining_classes' => $initialPlan->class_limit,
+            ]);
         }
 
         event(new Registered($user));
