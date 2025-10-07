@@ -14,7 +14,7 @@ class MembershipPlan extends Model
         'name',
         'description',
         'duration_days',
-        'class_limit_per_week',
+        'class_limit',
         'price',
         'requires_payment',
         'is_active',

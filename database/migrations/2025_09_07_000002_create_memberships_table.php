@@ -15,6 +15,7 @@ return new class extends Migration
             $table->date('starts_at');
             $table->date('ends_at');
             $table->string('status')->default('active');
+            $table->integer('remaining_classes')->default(1);
             $table->timestamps();
         });
     }

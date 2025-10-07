@@ -30,7 +30,7 @@ const form = useForm({
   name: props.plan.name,
   description: props.plan.description,
   duration_days: props.plan.duration_days,
-  class_limit_per_week: props.plan.class_limit_per_week,
+  class_limit: props.plan.class_limit,
   price: Number(props.plan.price),
   is_active: props.plan.is_active,
 });
@@ -79,15 +79,15 @@ const submit = () => {
             <InputError :message="form.errors.duration_days" />
           </div>
           <div class="grid gap-2">
-            <Label for="class_limit_per_week">Límite de clases por semana</Label>
-            <NumberField id="class_limit_per_week" v-model="form.class_limit_per_week" :min="1" :step="1" required>
+            <Label for="class_limit">Límite de clases</Label>
+            <NumberField id="class_limit" v-model="form.class_limit" :min="1" :step="1" required>
               <NumberFieldContent>
                 <NumberFieldDecrement />
                 <NumberFieldInput />
                 <NumberFieldIncrement />
               </NumberFieldContent>
             </NumberField>
-            <InputError :message="form.errors.class_limit_per_week" />
+            <InputError :message="form.errors.class_limit" />
           </div>
           <div class="grid gap-2">
             <Label for="price">Precio</Label>

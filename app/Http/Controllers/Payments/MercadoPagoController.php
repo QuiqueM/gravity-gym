@@ -40,14 +40,14 @@ class MercadoPagoController extends \App\Http\Controllers\Controller
                   "failure" => route('payments.mercadopago.failure'),
                   "pending" => route('payments.mercadopago.pending'),
               ],
-              "notification_url" => route('payments.mercadopago.webhook'),
+              // "notification_url" => route('payments.mercadopago.webhook'),
               "external_reference" => $user->id . '-' . ($plan['id'] ?? '') . '-' . time(), // Referencia única para tu sistema
               "metadata" => [
                   "user_id" => $user->id,
                   "membership_plan_id" => $plan['id'] ?? null,
                   "payment_type" => "membership",
               ],
-              "auto_return" => "approved", // Redireccionar automáticamente después del pago aprobado
+              // "auto_return" => "approved", // Redireccionar automáticamente después del pago aprobado
               // "expires" => true,
               // "expiration_date_from" => now()->toIso8601String(),
               // "expiration_date_to" => now()->addHours(24)->toIso8601String(),
@@ -263,7 +263,7 @@ class MercadoPagoController extends \App\Http\Controllers\Controller
         $status = $request->query('status');
         $externalReference = $request->query('external_reference');
 
-        return Inertia::render('Payments/Success', [
+        return Inertia::render('payments/Success', [
             'paymentId' => $paymentId,
             'status' => $status,
             'externalReference' => $externalReference,
@@ -281,7 +281,7 @@ class MercadoPagoController extends \App\Http\Controllers\Controller
         $paymentType = $request->query('payment_type');
         $preferenceId = $request->query('preference_id');
 
-        return Inertia::render('Payments/Failure', [
+        return Inertia::render('payments/Failure', [
             'paymentId' => $paymentId,
             'status' => $status,
             'externalReference' => $externalReference,
@@ -301,7 +301,7 @@ class MercadoPagoController extends \App\Http\Controllers\Controller
         $paymentType = $request->query('payment_type');
         $preferenceId = $request->query('preference_id');
 
-        return Inertia::render('Payments/Pending', [
+        return Inertia::render('payments/Pending', [
             'paymentId' => $paymentId,
             'status' => $status,
             'externalReference' => $externalReference,

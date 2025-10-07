@@ -18,11 +18,11 @@ class DatabaseSeeder extends Seeder
             UserSeeder::class,
             MembershipPlanSeeder::class,
             MembershipSeeder::class,
-            ClassTypeSeeder::class,
-            GymClassSeeder::class,
-            ClassScheduleSeeder::class,
-            ClassRegistrationSeeder::class,
-            AttendanceSeeder::class,
+            // ClassTypeSeeder::class,
+            // GymClassSeeder::class,
+            // ClassScheduleSeeder::class,
+            // ClassRegistrationSeeder::class,
+            // AttendanceSeeder::class,
         ]);
     }
 }

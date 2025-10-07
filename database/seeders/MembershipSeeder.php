@@ -12,7 +12,7 @@ class MembershipSeeder extends Seeder
 {
     public function run(): void
     {
-        $plan = MembershipPlan::where('name', 'Básico')->first();
+        $plan = MembershipPlan::where('id', 1)->first();
         $users = User::whereHas('roles', function($q) { $q->where('name', 'Member'); })->take(50)->get();
 
         foreach ($users as $user) {
@@ -22,6 +22,7 @@ class MembershipSeeder extends Seeder
                 'starts_at' => Carbon::now()->subDays(rand(0, 10)),
                 'ends_at' => Carbon::now()->addDays(20),
                 'status' => 'active',
+                'remaining_classes' => $plan->class_limit ?? 1,
             ]);
         }
     }

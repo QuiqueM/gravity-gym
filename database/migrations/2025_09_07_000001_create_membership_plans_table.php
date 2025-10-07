@@ -13,7 +13,7 @@ return new class extends Migration
             $table->string('name');
             $table->text('description')->nullable();
             $table->integer('duration_days');
-            $table->integer('class_limit_per_week')->nullable();
+            $table->integer('class_limit')->nullable();
             $table->decimal('price', 8, 2);
             $table->boolean('requires_payment')->default(true);
             $table->boolean('is_active')->default(true);

@@ -32,9 +32,9 @@ class UserSeeder extends Seeder
         $member->roles()->sync([Role::where('name', 'Member')->first()->id]);
 
         // Crear 100 members adicionales
-        $members = User::factory(100)->create();
-        foreach ($members as $mem) {
-            $mem->roles()->sync([Role::where('name', 'Member')->first()->id]);
-        }
+        // $members = User::factory(100)->create();
+        // foreach ($members as $mem) {
+        //     $mem->roles()->sync([Role::where('name', 'Member')->first()->id]);
+        // }
     }
 }

@@ -1,7 +1,7 @@
 <template>
-  <div class="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
+  <div class="min-h-screen bg-background flex flex-col justify-center py-12 sm:px-6 lg:px-8">
     <div class="sm:mx-auto sm:w-full sm:max-w-md">
-      <div class="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
+      <div class="bg-background border border-primary py-8 px-4 shadow-lg shadow-primary sm:rounded-lg sm:px-10">
         <!-- Icono de error -->
         <div class="text-center">
           <div class="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-red-100 mb-4">
@@ -10,8 +10,8 @@
             </svg>
           </div>
           
-          <h1 class="text-2xl font-bold text-gray-900 mb-2">Pago No Procesado</h1>
-          <p class="text-gray-600 mb-6">No pudimos procesar tu pago en este momento</p>
+          <h1 class="text-2xl font-bold text-primary mb-2">Pago No Procesado</h1>
+          <p class="text-muted-foreground mb-6">No pudimos procesar tu pago en este momento</p>
           
           <!-- Información del pago -->
           <div class="bg-gray-50 rounded-lg p-4 mb-6">
@@ -38,7 +38,7 @@
           <div class="space-y-3">
             <button 
               @click="retryPayment"
-              class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+              class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary "
             >
               Intentar de Nuevo
             </button>
@@ -52,7 +52,7 @@
           </div>
           
           <!-- Información de contacto -->
-          <div class="mt-6 text-xs text-gray-500">
+          <div class="mt-6 text-xs text-muted-foreground">
             <p>¿Necesitas ayuda? Contacta a soporte:</p>
             <p class="font-medium">soporte@gravitygym.com</p>
           </div>
