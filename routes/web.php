@@ -13,6 +13,8 @@ use App\Http\Controllers\Payments\MercadoPagoController;
 Route::get('/', function () {
     return Inertia::render('Welcome');
 })->name('home');
+Route::post('/payments/mercadopago/webhook', [MercadoPagoController::class, 'handleWebhook'])->name('payments.mercadopago.webhook');
+
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard');
@@ -41,7 +43,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     // Rutas de Mercado Pago
     Route::post('/payments/mercadopago/membership', [MercadoPagoController::class, 'createMembershipPayment'])->middleware('auth')->name('payments.mercadopago.membership');
-    Route::post('/payments/mercadopago/webhook', [MercadoPagoController::class, 'handleWebhook'])->name('payments.mercadopago.webhook');
     Route::get('/payments/mercadopago/success', [MercadoPagoController::class, 'success'])->name('payments.mercadopago.success');
     Route::get('/payments/mercadopago/failure', [MercadoPagoController::class, 'failure'])->name('payments.mercadopago.failure');
     Route::get('/payments/mercadopago/pending', [MercadoPagoController::class, 'pending'])->name('payments.mercadopago.pending');
