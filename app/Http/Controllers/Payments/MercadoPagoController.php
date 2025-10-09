@@ -74,85 +74,85 @@ class MercadoPagoController extends \App\Http\Controllers\Controller
     {
         Log::info('Mercado Pago Webhook Received', $request->all());
 
-        if ($request->input('type') === 'payment') {
-            $paymentId = $request->input('data.id');
-            try {
-                MercadoPagoConfig::setAccessToken(config('services.mercadopago.token'));
-                $client = new \MercadoPago\Client\Payment\PaymentClient();
-                $payment = $client->get($paymentId);
+        // if ($request->input('type') === 'payment') {
+        //     $paymentId = $request->input('data.id');
+        //     try {
+        //         MercadoPagoConfig::setAccessToken(config('services.mercadopago.token'));
+        //         $client = new \MercadoPago\Client\Payment\PaymentClient();
+        //         $payment = $client->get($paymentId);
 
-                if ($payment && $payment->status === 'approved') {
-                    // Lógica para activar la membresía o actualizar el estado del pago
-                    Log::info('Payment Approved', ['payment_id' => $paymentId]);
+        //         if ($payment && $payment->status === 'approved') {
+        //             // Lógica para activar la membresía o actualizar el estado del pago
+        //             Log::info('Payment Approved', ['payment_id' => $paymentId]);
                     
-                    // Aquí puedes usar la metadata para encontrar el usuario y el plan
-                    $metadata = (array) $payment->metadata;
-                    $userId = $metadata['user_id'] ?? null;
-                    $membershipPlanId = $metadata['membership_plan_id'] ?? null;
-                    $paymentType = $metadata['payment_type'] ?? null;
+        //             // Aquí puedes usar la metadata para encontrar el usuario y el plan
+        //             $metadata = (array) $payment->metadata;
+        //             $userId = $metadata['user_id'] ?? null;
+        //             $membershipPlanId = $metadata['membership_plan_id'] ?? null;
+        //             $paymentType = $metadata['payment_type'] ?? null;
 
-                    if ($userId && $membershipPlanId && $paymentType === 'membership') {
-                        $user = \App\Models\User::find($userId);
-                        $membershipPlan = \App\Models\MembershipPlan::find($membershipPlanId);
+        //             if ($userId && $membershipPlanId && $paymentType === 'membership') {
+        //                 $user = \App\Models\User::find($userId);
+        //                 $membershipPlan = \App\Models\MembershipPlan::find($membershipPlanId);
 
-                        if ($user && $membershipPlan) {
-                            // Verificar si ya tiene una membresía activa de este plan o si es una renovación
-                            $existingMembership = $user->memberships()->where('membership_plan_id', $membershipPlan->id)->first();
+        //                 if ($user && $membershipPlan) {
+        //                     // Verificar si ya tiene una membresía activa de este plan o si es una renovación
+        //                     $existingMembership = $user->memberships()->where('membership_plan_id', $membershipPlan->id)->first();
 
-                            if ($existingMembership) {
-                                // Renovar membresía
-                                $existingMembership->update([
-                                    'start_date' => now(),
-                                    'end_date' => now()->addDays($membershipPlan->duration_days),
-                                    'status' => 'active',
-                                ]);
-                                Log::info('Membership renewed for user', ['user_id' => $userId, 'plan_id' => $membershipPlanId]);
-                            } else {
-                                // Crear nueva membresía
-                                $user->memberships()->create([
-                                    'membership_plan_id' => $membershipPlan->id,
-                                    'start_date' => now(),
-                                    'end_date' => now()->addDays($membershipPlan->duration_days),
-                                    'status' => 'active',
-                                ]);
-                                Log::info('New membership created for user', ['user_id' => $userId, 'plan_id' => $membershipPlanId]);
-                            }
+        //                     if ($existingMembership) {
+        //                         // Renovar membresía
+        //                         $existingMembership->update([
+        //                             'start_date' => now(),
+        //                             'end_date' => now()->addDays($membershipPlan->duration_days),
+        //                             'status' => 'active',
+        //                         ]);
+        //                         Log::info('Membership renewed for user', ['user_id' => $userId, 'plan_id' => $membershipPlanId]);
+        //                     } else {
+        //                         // Crear nueva membresía
+        //                         $user->memberships()->create([
+        //                             'membership_plan_id' => $membershipPlan->id,
+        //                             'start_date' => now(),
+        //                             'end_date' => now()->addDays($membershipPlan->duration_days),
+        //                             'status' => 'active',
+        //                         ]);
+        //                         Log::info('New membership created for user', ['user_id' => $userId, 'plan_id' => $membershipPlanId]);
+        //                     }
 
-                            // Registrar el pago en la base de datos
-                            \App\Models\Payment::create([
-                                'user_id' => $userId,
-                                'membership_plan_id' => $membershipPlanId,
-                                'amount' => $payment->transaction_amount,
-                                'currency' => $payment->currency_id,
-                                'payment_method' => $payment->payment_method_id,
-                                'status' => $payment->status,
-                                'external_id' => $payment->id,
-                                'external_reference' => $payment->external_reference,
-                                'external_status' => $payment->status_detail,
-                                'processed_at' => now(),
-                                'metadata' => $metadata,
-                            ]);
-                            Log::info('Payment recorded in database', ['payment_id' => $paymentId]);
-                        } else {
-                            Log::warning('User or Membership Plan not found for payment', ['payment_id' => $paymentId, 'user_id' => $userId, 'membership_plan_id' => $membershipPlanId]);
-                        }
-                    } else {
-                        Log::warning('Missing metadata for payment processing', ['payment_id' => $paymentId, 'metadata' => $metadata]);
-                    }
-                } else if ($payment && ($payment->status === 'pending' || $payment->status === 'in_process')) {
-                    Log::info('Payment Pending or In Process', ['payment_id' => $paymentId]);
-                    // Opcional: Actualizar el estado del pago en tu base de datos a pendiente
-                    // Puedes registrar el pago aquí si lo deseas, con estado pendiente
-                } else if ($payment && $payment->status === 'rejected') {
-                    Log::warning('Payment Rejected', ['payment_id' => $paymentId, 'status_detail' => $payment->status_detail]);
-                    // Opcional: Actualizar el estado del pago en tu base de datos a rechazado
-                    // Puedes registrar el pago aquí si lo deseas, con estado rechazado
-                }
-            } catch (\Exception $e) {
-                Log::error('Error processing Mercado Pago webhook: ' . $e->getMessage(), ['exception' => $e]);
-                return response()->json(['status' => 'error', 'message' => $e->getMessage()], 500);
-            }
-        }
+        //                     // Registrar el pago en la base de datos
+        //                     \App\Models\Payment::create([
+        //                         'user_id' => $userId,
+        //                         'membership_plan_id' => $membershipPlanId,
+        //                         'amount' => $payment->transaction_amount,
+        //                         'currency' => $payment->currency_id,
+        //                         'payment_method' => $payment->payment_method_id,
+        //                         'status' => $payment->status,
+        //                         'external_id' => $payment->id,
+        //                         'external_reference' => $payment->external_reference,
+        //                         'external_status' => $payment->status_detail,
+        //                         'processed_at' => now(),
+        //                         'metadata' => $metadata,
+        //                     ]);
+        //                     Log::info('Payment recorded in database', ['payment_id' => $paymentId]);
+        //                 } else {
+        //                     Log::warning('User or Membership Plan not found for payment', ['payment_id' => $paymentId, 'user_id' => $userId, 'membership_plan_id' => $membershipPlanId]);
+        //                 }
+        //             } else {
+        //                 Log::warning('Missing metadata for payment processing', ['payment_id' => $paymentId, 'metadata' => $metadata]);
+        //             }
+        //         } else if ($payment && ($payment->status === 'pending' || $payment->status === 'in_process')) {
+        //             Log::info('Payment Pending or In Process', ['payment_id' => $paymentId]);
+        //             // Opcional: Actualizar el estado del pago en tu base de datos a pendiente
+        //             // Puedes registrar el pago aquí si lo deseas, con estado pendiente
+        //         } else if ($payment && $payment->status === 'rejected') {
+        //             Log::warning('Payment Rejected', ['payment_id' => $paymentId, 'status_detail' => $payment->status_detail]);
+        //             // Opcional: Actualizar el estado del pago en tu base de datos a rechazado
+        //             // Puedes registrar el pago aquí si lo deseas, con estado rechazado
+        //         }
+        //     } catch (\Exception $e) {
+        //         Log::error('Error processing Mercado Pago webhook: ' . $e->getMessage(), ['exception' => $e]);
+        //         return response()->json(['status' => 'error', 'message' => $e->getMessage()], 500);
+        //     }
+        // }
 
         return response()->json(['status' => 'success'], 200);
     }
