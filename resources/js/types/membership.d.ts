@@ -4,7 +4,7 @@ export interface Plan {
   description?: string;
   duration_days: number;
   class_limit?: number | null;
-  price: string | number;
+  price: number;
   is_active: boolean;
 }
 

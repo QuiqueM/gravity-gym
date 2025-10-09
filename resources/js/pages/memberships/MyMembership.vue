@@ -2,12 +2,27 @@
 import { useDates } from '@/composables/useDates';
 import AppLayout from '@/layouts/AppLayout.vue';
 import type { BreadcrumbItem } from '@/types';
-import { Membership } from '@/types/membership';
+import { Membership, Plan } from '@/types/membership';
 import { Head } from '@inertiajs/vue3';
+import MessageAlert from '@/components/Alert/MessageAlert.vue';
+import { computed, ref } from 'vue';
+import { Button } from '@/components/ui/button';
+import ModalMemberships from '@/components/ModalMemberships/ModalMemberships.vue';
+import MercadoPagoMembershipModal from '@/components/MercadoPagoMembershipModal.vue';
+
 
 const props = defineProps<{
   membership: Membership;
+  plans: Plan[];
 }>();
+
+const showMemberships = ref(false);
+const paymentModal = ref(false);
+const selectedPlan = ref<Plan | null>(null);
+
+const isMembershipExpired = computed(() => {
+  return props.membership.status === 'expired';
+});
 
 const { formatDate } = useDates();
 
@@ -15,6 +30,12 @@ const breadcrumbs: BreadcrumbItem[] = [
   { title: 'Dashboard', href: '/dashboard' },
   { title: 'Tu Membresía', href: '#' },
 ];
+
+const onPlanSelected = (plan: Plan) => {
+  showMemberships.value = false;
+  selectedPlan.value = plan;
+  paymentModal.value = true;
+}
 </script>
 <template>
 
@@ -31,6 +52,7 @@ const breadcrumbs: BreadcrumbItem[] = [
             <div class="flex flex-[2_2_0px] flex-col gap-1">
               <p class="text-base leading-tight font-bold text-white">{{ membership.plan.name }}</p>
               <p class="text-sm leading-normal font-normal text-muted-foreground">{{ membership.plan.description }}</p>
+              <MessageAlert v-if="isMembershipExpired" title="Membresía Vencida" description="Tu membresía está vencida." type="destructive" />
             </div>
             <div class="aspect-video w-full flex-1 rounded-lg bg-cover bg-center bg-no-repeat" 
               style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAIeM_ufZgsO6wZ2S7LUrFXhNSGpYxBa2chHSv4ZfJxY1jvsUQDWv0aNKRHuEIJs4XF8FmPOR3xWPxyFBdFG5HmOTNFl7PXLu-vCchQnVyJNdJpXq2omEgtv2WeVPX6DBGPh65uLIrQYDL_RGP9rCVinGB-dVwmhjy5KL5wNNANifwl6cGHlBHuV0TObILxauIv93dAfZNcVbe98E9XMxyUt-WWv3L21sc9foaBGRumaYws2zfoCQ33Hn-s3MkqLf6VRN7VWnt3iyw');"
@@ -68,17 +90,19 @@ const breadcrumbs: BreadcrumbItem[] = [
         </h3>
         <div class="flex justify-stretch">
           <div class="flex flex-1 flex-wrap justify-start gap-3 px-4 py-3">
-            <button
-              class="flex h-10 max-w-[480px] min-w-[84px] cursor-pointer items-center justify-center overflow-hidden rounded-lg bg-[#205d85] px-4 text-sm leading-normal font-bold tracking-[0.015em] text-white">
-              <span class="truncate">Actualizar Membresía</span>
-            </button>
-            <button
-              class="flex h-10 max-w-[480px] min-w-[84px] cursor-pointer items-center justify-center overflow-hidden rounded-lg bg-[#293842] px-4 text-sm leading-normal font-bold tracking-[0.015em] text-white">
+            <Button variant="default" @click="showMemberships = true">
               <span class="truncate">Renovar Membresía</span>
-            </button>
+            </Button>
           </div>
         </div>
       </div>
     </div>
+    <ModalMemberships v-model="showMemberships" :memberships="plans" @plan-selected="onPlanSelected" />
+    
+    <MercadoPagoMembershipModal
+      :open="paymentModal"
+      :plan="selectedPlan!"
+      @close="paymentModal = false"
+    />
   </AppLayout>
 </template>

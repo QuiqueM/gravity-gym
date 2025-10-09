@@ -8,11 +8,11 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog"
 import Button from '@/components/ui/button/Button.vue';
+import { Plan } from '@/types/membership';
 
 const props = defineProps<{
   open: boolean,
-  plan: any,
-  amount: number,
+  plan: Plan,
 }>();
 
 const emit = defineEmits(['close']);
@@ -100,7 +100,7 @@ function retryPayment() {
       <div class="text-center">
         <div class="mb-6">
           <h3 class="text-lg font-medium text-white mb-2">{{ plan?.name || 'Plan de Membresía' }}</h3>
-          <p class="text-2xl font-bold text-blue-600">${{ amount.toLocaleString('es-MX') }} MXN</p>
+          <p class="text-2xl font-bold text-blue-600">${{ plan.price}} MXN</p>
         </div>
         
         <Button 

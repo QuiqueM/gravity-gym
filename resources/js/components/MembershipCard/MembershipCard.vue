@@ -1,12 +1,25 @@
 <script lang="ts" setup>
+import { computed } from 'vue';
 interface Props {
   title: string;
-  price: number;
-  frequency: string;
+  price: number|string;
+  frequency: number;
   characteristics: string[];
 }
 
-defineProps<Props>();
+const props = defineProps<Props>();
+const emits = defineEmits(['select']);
+
+const price = computed(() => {
+  if (Number(props.price) === 0) {
+    return 'Gratis';
+  }
+  return `${props.price}`;
+});
+
+const onClick = () => {
+  emits('select');
+}
 </script>
 
 <template>
@@ -14,12 +27,14 @@ defineProps<Props>();
     <div class="flex flex-col gap-1">
       <h1 class="text-white text-base font-bold leading-tight">{{ title }}</h1>
       <p class="flex items-baseline gap-1 text-white">
-        <span class="text-white text-4xl font-black leading-tight tracking-[-0.033em]">${{ price }}</span>
-        <span class="text-white text-base font-bold leading-tight">/{{ frequency }}</span>
+        <span class="text-white text-4xl font-black leading-tight tracking-[-0.033em]">{{ price }}</span>
+        <span class="text-white text-base font-bold leading-tight">/ {{ frequency }} días</span>
       </p>
     </div>
     <button
-      class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-full h-10 px-4 bg-primary text-white text-sm font-bold leading-normal tracking-[0.015em]">
+      class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-full h-10 px-4 bg-primary text-white text-sm font-bold leading-normal tracking-[0.015em]"
+      @click="onClick"
+    >
       <span class="truncate">Comprar</span>
     </button>
     <div class="flex flex-col gap-2">
