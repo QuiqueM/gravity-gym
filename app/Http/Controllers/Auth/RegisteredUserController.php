@@ -58,8 +58,8 @@ class RegisteredUserController extends Controller
             Membership::create([
                 'user_id' => $user->id,
                 'membership_plan_id' => $initialPlan->id,
-                'start_date' => now(),
-                'end_date' => now()->addDays($initialPlan->duration_days),
+                'starts_at' => now(),
+                'ends_at' => now()->addDays($initialPlan->duration_days),
                 'is_active' => true,
                 'remaining_classes' => $initialPlan->class_limit,
             ]);

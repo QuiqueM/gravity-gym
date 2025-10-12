@@ -45,7 +45,7 @@ class CustomVerifyEmail extends Notification
             ->line('Por favor, haz clic en el botón de abajo para verificar tu dirección de correo electrónico.')
             ->action('Verificar Correo Electrónico', $verificationUrl)
             ->line('Si no creaste una cuenta, no se requiere ninguna acción adicional.')
-            ->salutation('Saludos, ' . config('app.name'));
+            ->salutation('Saludos, Gravity Gym');
     }
 
     /**
