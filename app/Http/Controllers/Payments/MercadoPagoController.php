@@ -158,7 +158,7 @@ class MercadoPagoController extends \App\Http\Controllers\Controller
                     'error' => $e->getMessage(),
                     'api_response_status' => $apiResponse ? $apiResponse->getStatusCode() : 'N/A',
                     // 'api_response_headers' => $apiResponse ? $apiResponse->getHeaders() : 'N/A',
-                    'api_response_content' => $apiResponse ? json_decode($apiResponse->getContent(), true) : 'No API response content available',
+                    'api_response_content' => $apiResponse ? (is_array($apiResponse->getContent()) ? $apiResponse->getContent() : json_decode($apiResponse->getContent(), true)) : 'No API response content available',
                 ]);
                 return response()->json(['status' => 'error', 'message' => $e->getMessage(), 'details' => $apiResponse ? $apiResponse->getContent() : 'No details'], 500);    
             }
