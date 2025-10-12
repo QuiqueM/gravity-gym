@@ -151,8 +151,21 @@ class MercadoPagoController extends \App\Http\Controllers\Controller
                     // Opcional: Actualizar el estado del pago en tu base de datos a rechazado
                     // Puedes registrar el pago aquí si lo deseas, con estado rechazado
                 }
+            } catch (\MercadoPago\Exceptions\MPApiException $e) {
+                $apiResponse = $e->getApiResponse();
+                Log::error('Error processing Mercado Pago webhook from API', [
+                    'payment_id' => $paymentId,
+                    'error' => $e->getMessage(),
+                    'api_response_status' => $apiResponse ? $apiResponse->getStatusCode() : 'N/A',
+                    'api_response_headers' => $apiResponse ? $apiResponse->getHeaders() : 'N/A',
+                    'api_response_content' => $apiResponse ? json_decode($apiResponse->getContent(), true) : 'No API response content available',
+                ]);
+                return response()->json(['status' => 'error', 'message' => $e->getMessage(), 'details' => $apiResponse ? $apiResponse->getContent() : 'No details'], 500);
             } catch (\Exception $e) {
-                Log::error('Error processing Mercado Pago webhook: ' . $e->getMessage(), ['exception' => $e]);
+                Log::error('Error processing Mercado Pago webhook: ' . $e->getMessage(), [
+                    'exception' => $e,
+                    'mp_api_response' => method_exists($e, 'getApiResponse') && $e->getApiResponse() ? json_encode($e->getApiResponse()->getContent(), JSON_PRETTY_PRINT) : 'No API response content available',
+                ]);
                 return response()->json(['status' => 'error', 'message' => $e->getMessage()], 500);
             }
         }
@@ -163,51 +176,46 @@ class MercadoPagoController extends \App\Http\Controllers\Controller
     /**
      * Procesar notificación de pago
      */
-    private function processPaymentNotification($paymentId)
-    {
-        try {
-            // Obtener información del pago desde Mercado Pago
-            $payment = \MercadoPago\Payment::find_by_id($paymentId);
+    // private function processPaymentNotification($paymentId)
+    // {
+    //     try {
+    //         // Obtener información del pago desde Mercado Pago
+    //         $payment = \MercadoPago\Payment::find_by_id($paymentId);
             
-            if (!$payment) {
-                Log::warning('Pago no encontrado en Mercado Pago', ['payment_id' => $paymentId]);
-                return;
-            }
-
-            // Buscar el pago en nuestra base de datos
-            $localPayment = Payment::where('external_id', $paymentId)->first();
+    //         if (!$payment) {
+    //             Log::warning('Pago no encontrado en Mercado Pago', ['payment_id' => $paymentId]);
+    //             return;
+    //         }
+    //         // Buscar el pago en nuestra base de datos
+    //         $localPayment = Payment::where('external_id', $paymentId)->first();
             
-            if (!$localPayment) {
-                Log::warning('Pago local no encontrado', ['payment_id' => $paymentId]);
-                return;
-            }
-
-            // Actualizar estado del pago
-            $status = $this->mapMercadoPagoStatus($payment->status);
-            $localPayment->update([
-                'status' => $status,
-                'external_status' => $payment->status,
-                'processed_at' => now(),
-            ]);
-
-            // Si el pago fue aprobado, activar membresía
-            if ($status === 'approved') {
-                $this->activateMembership($localPayment);
-            }
-
-            Log::info('Pago procesado exitosamente', [
-                'payment_id' => $paymentId,
-                'status' => $status,
-                'user_id' => $localPayment->user_id,
-            ]);
-
-        } catch (\Exception $e) {
-            Log::error('Error procesando notificación de pago', [
-                'payment_id' => $paymentId,
-                'error' => $e->getMessage(),
-            ]);
-        }
-    }
+    //         if (!$localPayment) {
+    //             Log::warning('Pago local no encontrado', ['payment_id' => $paymentId]);
+    //             return;
+    //         }
+    //         // Actualizar estado del pago
+    //         $status = $this->mapMercadoPagoStatus($payment->status);
+    //         $localPayment->update([
+    //             'status' => $status,
+    //             'external_status' => $payment->status,
+    //             'processed_at' => now(),
+    //         ]);
+    //         // Si el pago fue aprobado, activar membresía
+    //         if ($status === 'approved') {
+    //             $this->activateMembership($localPayment);
+    //         }
+    //         Log::info('Pago procesado exitosamente', [
+    //             'payment_id' => $paymentId,
+    //             'status' => $status,
+    //             'user_id' => $localPayment->user_id,
+    //         ]);
+    //     } catch (\Exception $e) {
+    //         Log::error('Error procesando notificación de pago', [
+    //             'payment_id' => $paymentId,
+    //             'error' => $e->getMessage(),
+    //         ]);
+    //     }
+    // }
 
     /**
      * Mapear estados de Mercado Pago a estados locales
@@ -228,34 +236,34 @@ class MercadoPagoController extends \App\Http\Controllers\Controller
     /**
      * Activar membresía del usuario
      */
-    private function activateMembership($payment)
-    {
-        try {
-            DB::transaction(function () use ($payment) {
-                // Crear o actualizar membresía del usuario
-                $membership = $payment->user->memberships()->updateOrCreate(
-                    ['membership_plan_id' => $payment->membership_plan_id],
-                    [
-                        'start_date' => now(),
-                        'end_date' => now()->addMonth(), // Asumiendo membresía mensual
-                        'status' => 'active',
-                        'payment_id' => $payment->id,
-                    ]
-                );
+    // private function activateMembership($payment)
+    // {
+    //     try {
+    //         DB::transaction(function () use ($payment) {
+    //             // Crear o actualizar membresía del usuario
+    //             $membership = $payment->user->memberships()->updateOrCreate(
+    //                 ['membership_plan_id' => $payment->membership_plan_id],
+    //                 [
+    //                     'start_date' => now(),
+    //                     'end_date' => now()->addMonth(), // Asumiendo membresía mensual
+    //                     'status' => 'active',
+    //                     'payment_id' => $payment->id,
+    //                 ]
+    //             );
 
-                Log::info('Membresía activada', [
-                    'user_id' => $payment->user_id,
-                    'membership_id' => $membership->id,
-                    'payment_id' => $payment->id,
-                ]);
-            });
-        } catch (\Exception $e) {
-            Log::error('Error activando membresía', [
-                'payment_id' => $payment->id,
-                'error' => $e->getMessage(),
-            ]);
-        }
-    }
+    //             Log::info('Membresía activada', [
+    //                 'user_id' => $payment->user_id,
+    //                 'membership_id' => $membership->id,
+    //                 'payment_id' => $payment->id,
+    //             ]);
+    //         });
+    //     } catch (\Exception $e) {
+    //         Log::error('Error activando membresía', [
+    //             'payment_id' => $payment->id,
+    //             'error' => $e->getMessage(),
+    //         ]);
+    //     }
+    // }
 
     /**
      * Página de éxito

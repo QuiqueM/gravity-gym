@@ -5,7 +5,6 @@ use Inertia\Inertia;
 use App\Http\Controllers\Memberships\MembershipController;
 use App\Http\Controllers\Classes\ClassController;
 use App\Http\Controllers\Attendance\AttendanceController;
-use App\Http\Controllers\Payments\OpenPayController;
 use App\Http\Controllers\Dashboard\DashboardController;
 use App\Http\Controllers\Users\UserController;
 use App\Http\Controllers\Payments\MercadoPagoController;
@@ -29,11 +28,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('attendance/list/{schedule}', [AttendanceController::class, 'show'])->name('attendance.show');
     Route::get('my-attendances', [AttendanceController::class, 'upcoming'])->name('attendance.upcoming');
     Route::delete('my-attendances/{registration}', [AttendanceController::class, 'cancelRegistration'])->name('attendance.cancel');
-
-    Route::post('payments/openpay/charge', [OpenPayController::class, 'charge'])->name('openpay.charge');
-    
-    // Ruta de prueba UI
-    Route::get('payments/openpay', function () { return Inertia::render('payments/OpenPayTest'); })->name('openpay.test');
     
     Route::post('classes/{schedule}/create/attend', [ClassController::class, 'storeClassAttendance'])->name('classes.schedules.attend');
     
