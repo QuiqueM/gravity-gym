@@ -157,20 +157,13 @@ class MercadoPagoController extends \App\Http\Controllers\Controller
                     'payment_id' => $paymentId,
                     'error' => $e->getMessage(),
                     'api_response_status' => $apiResponse ? $apiResponse->getStatusCode() : 'N/A',
-                    'api_response_headers' => $apiResponse ? $apiResponse->getHeaders() : 'N/A',
+                    // 'api_response_headers' => $apiResponse ? $apiResponse->getHeaders() : 'N/A',
                     'api_response_content' => $apiResponse ? json_decode($apiResponse->getContent(), true) : 'No API response content available',
                 ]);
-                return response()->json(['status' => 'error', 'message' => $e->getMessage(), 'details' => $apiResponse ? $apiResponse->getContent() : 'No details'], 500);
-            } catch (\Exception $e) {
-                Log::error('Error processing Mercado Pago webhook: ' . $e->getMessage(), [
-                    'exception' => $e,
-                    'mp_api_response' => method_exists($e, 'getApiResponse') && $e->getApiResponse() ? json_encode($e->getApiResponse()->getContent(), JSON_PRETTY_PRINT) : 'No API response content available',
-                ]);
-                return response()->json(['status' => 'error', 'message' => $e->getMessage()], 500);
+                return response()->json(['status' => 'error', 'message' => $e->getMessage(), 'details' => $apiResponse ? $apiResponse->getContent() : 'No details'], 500);    
             }
         }
 
-        return response()->json(['status' => 'success'], 200);
     }
 
     /**
