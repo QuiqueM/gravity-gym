@@ -16,8 +16,10 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { toast } from 'vue-sonner'
+import { useDates } from '@/composables/useDates';
 
 const props = defineProps<ScheduleProps>();
+const { transformTimeZone } = useDates();
 
 const breadcrumbs: BreadcrumbItem[] = [
   { title: 'Dashboard', href: '/dashboard' },
@@ -46,7 +48,13 @@ const days = [
 ];
 
 const submit = () => {
-	form.post(route('classes.schedules.store', props.classSelected.id), {
+	form.transform(() => {
+		return {
+			...form,
+			starts_at: transformTimeZone(form.starts_at),
+			ends_at: transformTimeZone(form.ends_at),
+		};
+	}).post(route('classes.schedules.store', props.classSelected.id), {
 		onSuccess: () => {
 			form.reset();
 			toast.success('Horario creado exitosamente');

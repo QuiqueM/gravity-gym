@@ -38,6 +38,12 @@ const mainNavItems: NavItem[] = [
         isVisible: true,
     },
     {
+        title: 'Tus Asistencias',
+        href: '/my-attendances',
+        icon: CalendarClock,
+        isVisible: isMember.value,
+    },
+    {
         title: 'Asistencias',
         href: '/attendance',
         icon: CheckCircle2,

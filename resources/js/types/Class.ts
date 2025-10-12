@@ -21,3 +21,22 @@ export interface Classes {
   title: string;
   type: TypeClass;
 }
+
+export interface Registration {
+  id: number;
+  user_id: number;
+  class_schedule_id: number;
+  status: string;
+  created_at: string;
+  updated_at: string;
+  class_schedule: {
+    id: number;
+    class_id: number;
+    starts_at: string;
+    ends_at: string;
+    created_at: string;
+    updated_at: string;
+    class: Classes;
+    room: string;
+  };
+}

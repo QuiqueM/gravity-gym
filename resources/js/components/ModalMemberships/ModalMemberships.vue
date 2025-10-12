@@ -26,12 +26,12 @@ const selectPlan = (plan: Plan) => {
       <SheetHeader>
         <SheetTitle>Selecciona una Membresía</SheetTitle>
       </SheetHeader>
-      <div class="grid p-4">
+      <div class="grid p-4 gap-3">
         <MembershipCard 
           v-for="plan in memberships" 
           :key="plan.id"
           :title="plan.name"
-          :characteristics="[]"
+          :features="plan.features"
           :frequency="plan.duration_days"
           :price="plan.price"
           @select="selectPlan(plan)" />

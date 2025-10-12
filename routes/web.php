@@ -13,10 +13,11 @@ use App\Http\Controllers\Payments\MercadoPagoController;
 Route::get('/', function () {
     return Inertia::render('Welcome');
 })->name('home');
+
 Route::post('/payments/mercadopago/webhook', [MercadoPagoController::class, 'handleWebhook'])->name('payments.mercadopago.webhook');
 
-
 Route::middleware(['auth', 'verified'])->group(function () {
+
     Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::get('memberships', [MembershipController::class, 'index'])->name('memberships.index');
     
@@ -26,7 +27,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('attendance', [AttendanceController::class, 'index'])->name('attendance.index');
     Route::post('attendance', [AttendanceController::class, 'store'])->name('attendance.store');
     Route::get('attendance/list/{schedule}', [AttendanceController::class, 'show'])->name('attendance.show');
-    
+    Route::get('my-attendances', [AttendanceController::class, 'upcoming'])->name('attendance.upcoming');
+    Route::delete('my-attendances/{registration}', [AttendanceController::class, 'cancelRegistration'])->name('attendance.cancel');
+
     Route::post('payments/openpay/charge', [OpenPayController::class, 'charge'])->name('openpay.charge');
     
     // Ruta de prueba UI
@@ -38,9 +41,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('profile/avatar', [UserController::class, 'updateAvatarProfile'])->name('profile.avatar.update');
     Route::patch('profile/{user}', [UserController::class, 'update'])->name('profile.update');
     Route::delete('profile/{user}', [UserController::class, 'destroy'])->name('profile.destroy');
-
+    
     Route::get('my-membership', [MembershipController::class, 'myMembership'])->name('membership.my.show');
-
+    
     // Rutas de Mercado Pago
     Route::post('/payments/mercadopago/membership', [MercadoPagoController::class, 'createMembershipPayment'])->middleware('auth')->name('payments.mercadopago.membership');
     Route::get('/payments/mercadopago/success', [MercadoPagoController::class, 'success'])->name('payments.mercadopago.success');

@@ -14,7 +14,7 @@ return new class extends Migration
             $table->foreignId('membership_plan_id')->constrained('membership_plans')->onDelete('cascade');
             $table->date('starts_at');
             $table->date('ends_at');
-            $table->string('status')->default('active');
+            $table->boolean('is_active')->default(true);
             $table->integer('remaining_classes')->default(1);
             $table->timestamps();
         });

@@ -38,10 +38,10 @@ function createPayment() {
     '/payments/mercadopago/membership',
     {
       plan: {
-        id: 1,
-        name: 'Membresía',
+        id: props.plan.id,
+        name: props.plan.name,
       },
-      amount: 1,
+      amount: props.plan.price,
     },
     {
       preserveScroll: true,

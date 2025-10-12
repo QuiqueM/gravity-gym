@@ -96,8 +96,7 @@ class User extends Authenticatable implements MustVerifyEmail
     public function hasActiveMembership()
     {
         return $this->membership()
-            ->where('status', 'active')
-            ->where('end_date', '>', now())
+            ->where('is_active', true)
             ->exists();
     }
 
@@ -107,8 +106,7 @@ class User extends Authenticatable implements MustVerifyEmail
     public function activeMembership()
     {
         return $this->membership()
-            ->where('status', 'active')
-            ->where('end_date', '>', now())
+            ->where('is_active', true)
             ->first();
     }
 
@@ -135,7 +133,15 @@ class User extends Authenticatable implements MustVerifyEmail
     protected function avatar(): Attribute
     {
         return Attribute::make(
-            get: fn ($value) => Storage::url($value),
+            get: fn ($value) => $value ? Storage::url($value) : null,
         );
+    }
+
+    /**
+     * Obtener la reseña del usuario (relación uno a uno).
+     */
+    public function review()
+    {
+        return $this->hasOne(Review::class);
     }
 }

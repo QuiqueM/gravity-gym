@@ -6,6 +6,7 @@ export interface Plan {
   class_limit?: number | null;
   price: number;
   is_active: boolean;
+  features: string[];
 }
 
 export interface MembershipItem {

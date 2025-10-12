@@ -8,6 +8,7 @@ use App\Models\ClassType;
 use App\Models\GymClass;
 use App\Models\User;
 use App\Models\ClassRegistration;
+use App\Models\Membership;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -172,7 +173,7 @@ class ClassController extends Controller
         // Verificar si la clase requiere membresía y si el usuario tiene una membresía activa
         $class = $schedule->class;
         if ($class->requires_membership) {
-            $activeMembership = $user->membership()->where('ends_at', '>', now())->first();
+            $activeMembership = $user->membership()->where('is_active', true)->first();
             if (!$activeMembership) {
                 return back()->withErrors(['error' => 'Esta clase requiere una membresía activa.']);
             }
@@ -184,6 +185,12 @@ class ClassController extends Controller
             'user_id' => $user->id,
             'status' => 'active',
         ]);
+
+        //reduce las clases restantes  del usuario si tiene membresía activa
+        $membership = $user->activeMembership();
+        if ($membership && $membership->remaining_classes > 0) {
+            $membership->decrement('remaining_classes');
+        }
         return back()->with('success', 'Asistencia confirmada exitosamente.');
     }
 }

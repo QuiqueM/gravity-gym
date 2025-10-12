@@ -4,7 +4,7 @@ interface Props {
   title: string;
   price: number|string;
   frequency: number;
-  characteristics: string[];
+  features: string[];
 }
 
 const props = defineProps<Props>();
@@ -14,7 +14,7 @@ const price = computed(() => {
   if (Number(props.price) === 0) {
     return 'Gratis';
   }
-  return `${props.price}`;
+  return `$${props.price}`;
 });
 
 const onClick = () => {
@@ -38,7 +38,7 @@ const onClick = () => {
       <span class="truncate">Comprar</span>
     </button>
     <div class="flex flex-col gap-2">
-      <div v-for="(characteristic, index) in characteristics" :key="index" class="text-[13px] font-normal leading-normal flex gap-3 text-white">
+      <div v-for="(feature, index) in features" :key="index" class="text-[13px] font-normal leading-normal flex gap-3 text-white">
         <div class="text-white" data-icon="Check" data-size="20px" data-weight="regular">
           <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" fill="currentColor" viewBox="0 0 256 256">
             <path
@@ -46,8 +46,8 @@ const onClick = () => {
             </path>
           </svg>
         </div>
-        {{ characteristic }}
-      </div>  
+        {{ feature }}
+      </div>
     </div>
   </div>
 </template>

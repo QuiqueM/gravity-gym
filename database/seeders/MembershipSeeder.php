@@ -20,8 +20,8 @@ class MembershipSeeder extends Seeder
                 'user_id' => $user->id,
                 'membership_plan_id' => $plan->id,
                 'starts_at' => Carbon::now()->subDays(rand(0, 10)),
-                'ends_at' => Carbon::now()->addDays(20),
-                'status' => 'active',
+                'ends_at' => Carbon::now()->addDays(7),
+                'is_active' => true,
                 'remaining_classes' => $plan->class_limit ?? 1,
             ]);
         }

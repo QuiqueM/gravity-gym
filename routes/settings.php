@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Settings\PasswordController;
 use App\Http\Controllers\Settings\ProfileController;
+use App\Http\Controllers\ReviewController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -13,6 +14,10 @@ Route::middleware('auth')->group(function () {
     Route::delete('settings/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
     Route::get('settings/password', [PasswordController::class, 'edit'])->name('password.edit');
+
+    Route::get('settings/rate-us', [ReviewController::class, 'index'])->name('rate-us.index');
+    Route::put('settings/rate-us/{review}', [ReviewController::class, 'update'])->name('rate-us.update');
+    Route::post('settings/rate-us', [ReviewController::class, 'store'])->name('rate-us.store');
 
     Route::put('settings/password', [PasswordController::class, 'update'])
         ->middleware('throttle:6,1')

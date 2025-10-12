@@ -10,13 +10,14 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
+use Illuminate\Support\Carbon;
 
 class AttendanceController extends Controller
 {
     public function index(Request $request): Response
     {
         $user = auth()->user();
-        $date = $request->input('date') ? \Carbon\Carbon::parse($request->input('date')) : now();
+        $date = $request->input('date') ? Carbon::parse($request->input('date')) : now();
 
         // Filtrar los horarios del día
         $schedulesQuery = ClassSchedule::with(['class', 'class.instructor'])
@@ -81,6 +82,58 @@ class AttendanceController extends Controller
             'schedule' => $schedule,
             'attendances' => $attendances,
         ]);
+    }
+
+    /**
+     * Obtener las próximas asistencias del usuario, ordenadas por la más cercana a la fecha de consulta.
+     */
+    public function upcoming(): Response
+    {
+        $user = auth()->user();
+        $date = now();
+
+        // Buscar registros de inscripción futuros para el usuario
+        $registrations = ClassRegistration::where('user_id', $user->id)
+            ->whereHas('classSchedule', function($q) use ($date) {
+                $q->where('starts_at', '>=', $date);
+            })
+            ->with(['classSchedule.class.instructor'])
+            ->orderBy('class_schedule_id')
+            ->get()
+            ->sortBy(function($registration) {
+                return $registration->classSchedule->starts_at ?? null;
+            });
+
+        return Inertia::render('attendance/Upcoming', [
+            'registrations' => $registrations,
+        ]);
+    }
+
+    public function cancelRegistration(Request $request, ClassRegistration $registration): RedirectResponse
+    {
+        $user = auth()->user();
+        // Verificar que el registro de inscripción pertenezca al usuario autenticado
+        if ($registration->user_id !== $user->id) {
+            return back()->withErrors(['error' => 'No tienes permiso para cancelar esta inscripción.']);
+        }
+        // Verificar que la clase comience en más de una hora (ajustando zona horaria)
+        $startsAt = $registration->classSchedule->starts_at->copy()->setTimezone('UTC');
+        $now = now()->setTimezone('UTC');
+        $diff = $now->diffInMinutes($startsAt, false); // positivo si startsAt es futuro
+        if ($registration->classSchedule && $diff < 60) {
+            return back()->withErrors(['error' => 'No puedes cancelar la inscripción con menos de una hora de anticipación.']);
+        }
+
+        // Cancelar la inscripción
+        $registration->delete();
+
+        //aumenta las clases disponibles del usuario si tiene membresía activa
+        $membership = $user->activeMembership();
+        if ($membership) {
+            $membership->increment('remaining_classes');
+        }
+
+        return back()->with('success', 'Inscripción cancelada exitosamente.');
     }
 }
 

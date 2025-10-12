@@ -33,6 +33,7 @@ const form = useForm({
   class_limit: props.plan.class_limit,
   price: Number(props.plan.price),
   is_active: props.plan.is_active,
+  features: Array.isArray(props.plan.features) ? [...props.plan.features] : [''],
 });
 
 const submit = () => {
@@ -109,6 +110,16 @@ const submit = () => {
             <input id="is_active" type="checkbox" v-model="form.is_active" class="accent-primary" />
             <Label for="is_active">Activo</Label>
           </div>
+          <div class="grid gap-2">
+            <Label>Características del plan</Label>
+            <div v-for="(feature, idx) in form.features" :key="idx" class="flex gap-2 mb-2">
+              <Input v-model="form.features[idx]" placeholder="Característica" />
+              <Button type="button" @click="form.features.splice(idx, 1)" v-if="form.features.length > 1" size="sm" variant="destructive">Eliminar</Button>
+            </div>
+            <Button type="button" @click="form.features.push('')" size="sm" variant="secondary">Agregar característica</Button>
+            <InputError :message="form.errors.features" />
+          </div>
+
           <div class="flex md:justify-end">
             <Button type="submit" class="mt-2 w-full md:w-48" :disabled="form.processing">
               <LoaderCircle v-if="form.processing" class="h-4 w-4 animate-spin" />

@@ -18,6 +18,7 @@ return new class extends Migration
             $table->boolean('requires_payment')->default(true);
             $table->boolean('is_active')->default(true);
             $table->boolean('is_membership_initial')->default(false);
+            $table->jsonb('features')->nullable();
             $table->timestamps();
         });
     }

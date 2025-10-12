@@ -25,6 +25,11 @@ class ClassRegistration extends Model
     {
         return $this->belongsTo(User::class);
     }
+    
+    public function classSchedule()
+    {
+        return $this->belongsTo(ClassSchedule::class, 'class_schedule_id');
+    }
 }
 
 

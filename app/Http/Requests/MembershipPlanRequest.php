@@ -28,6 +28,7 @@ class MembershipPlanRequest extends FormRequest
             'duration_days' => ['required', 'integer', 'min:1'],
             'class_limit_per_week' => ['required', 'integer', 'min:1'],
             'is_active' => ['required', 'boolean'],
+            'features' => ['nullable', 'array'],
         ];
     }
 }

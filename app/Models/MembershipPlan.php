@@ -19,6 +19,11 @@ class MembershipPlan extends Model
         'requires_payment',
         'is_active',
         'is_membership_initial',
+        'features',
+    ];
+
+    protected $casts = [
+        'features' => 'array',
     ];
 
     public function memberships(): HasMany

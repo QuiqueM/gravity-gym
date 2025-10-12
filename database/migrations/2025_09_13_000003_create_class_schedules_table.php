@@ -11,8 +11,8 @@ return new class extends Migration
         Schema::create('class_schedules', function (Blueprint $table) {
             $table->id();
             $table->foreignId('class_id')->constrained('classes')->onDelete('cascade');
-            $table->dateTime('starts_at');
-            $table->dateTime('ends_at');
+            $table->timestampTz('starts_at');
+            $table->timestampTz('ends_at');
             $table->string('room')->nullable();
             $table->timestamps();
         });

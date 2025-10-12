@@ -18,7 +18,7 @@ class DatabaseSeeder extends Seeder
             UserSeeder::class,
             MembershipPlanSeeder::class,
             MembershipSeeder::class,
-            // ClassTypeSeeder::class,
+            ClassTypeSeeder::class,
             // GymClassSeeder::class,
             // ClassScheduleSeeder::class,
             // ClassRegistrationSeeder::class,

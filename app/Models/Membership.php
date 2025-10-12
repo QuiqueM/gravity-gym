@@ -15,7 +15,7 @@ class Membership extends Model
         'membership_plan_id',
         'starts_at',
         'ends_at',
-        'status',
+        'is_active',
         'remaining_classes',
     ];
 

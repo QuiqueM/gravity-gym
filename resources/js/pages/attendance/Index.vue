@@ -7,7 +7,7 @@ import { useDates } from '@/composables/useDates';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 
-const { now, onlyHoursAndMinutes, customParseFormat } = useDates();
+const { nowLocal, onlyHoursAndMinutes, customParseFormat } = useDates();
 
 defineProps<{
   schedules: any
@@ -18,7 +18,7 @@ const breadcrumbs: BreadcrumbItem[] = [
   { title: 'Asistencias', href: '/attendance' },
 ];
 
-const selectedDate = ref(now().format('YYYY-MM-DD'));
+const selectedDate = ref(nowLocal().format('YYYY-MM-DD'));
 
 watchEffect(() => {
   router.get(route('attendance.index'), { date: selectedDate.value }, { preserveState: true, only: ['schedules'] });

@@ -17,13 +17,18 @@ class MembershipPlanFactory extends Factory
             'name' => $name,
             'description' => fake()->sentence(8),
             'duration_days' => 30,
-            'class_limit_per_week' => $name === 'Premium' ? null : fake()->numberBetween(3, 6),
+            'class_limit' => $name === 'Premium' ? null : fake()->numberBetween(3, 6),
             'price' => match ($name) {
                 'Básico' => 399.00,
                 'Estándar' => 599.00,
                 default => 799.00,
             },
             'is_active' => true,
+            'features' => [
+                'Acceso a todas las áreas',
+                'Clases grupales',
+                'App móvil',
+            ],
         ];
     }
 }

@@ -18,6 +18,10 @@ const sidebarNavItems: NavItem[] = [
         title: 'Apariencia',
         href: '/settings/appearance',
     },
+    {
+        title: 'Calificanos',
+        href: '/settings/rate-us',
+    },
 ];
 
 const page = usePage();

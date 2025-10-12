@@ -10,9 +10,7 @@ class ClassTypeSeeder extends Seeder
     public function run(): void
     {
         $types = [
-            ['name' => 'Yoga', 'description' => 'Clase de yoga para todos los niveles'],
-            ['name' => 'Spinning', 'description' => 'Clase de spinning de alta energía'],
-            ['name' => 'Pilates', 'description' => 'Clase de pilates para fortalecer el core'],
+            ['name' => 'Calistenia', 'description' => 'Clase de calistenia para todos los niveles'],
         ];
         foreach ($types as $type) {
             ClassType::create($type);
