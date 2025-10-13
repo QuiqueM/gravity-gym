@@ -53,7 +53,7 @@ class MercadoPagoController extends \App\Http\Controllers\Controller
               "expiration_date_from" => now()->toIso8601String(),
               "expiration_date_to" => now()->addHours(24)->toIso8601String(),
           ]);
-          return Inertia::location($preference->init_point);
+          return Inertia::location($preference->sandbox_init_point);
         } catch (\Exception $e) {
             Log::error('Error creando preferencia de Mercado Pago', [
                 'error' => $e->getMessage(),
