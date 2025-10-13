@@ -53,7 +53,7 @@ class MercadoPagoController extends \App\Http\Controllers\Controller
               "expiration_date_from" => now()->toIso8601String(),
               "expiration_date_to" => now()->addHours(24)->toIso8601String(),
           ]);
-          return Inertia::location($preference->sandbox_init_point);
+          return Inertia::location($preference->init_point);
         } catch (\Exception $e) {
             Log::error('Error creando preferencia de Mercado Pago', [
                 'error' => $e->getMessage(),
@@ -144,12 +144,12 @@ class MercadoPagoController extends \App\Http\Controllers\Controller
                     }
                 } else if ($payment && ($payment->status === 'pending' || $payment->status === 'in_process')) {
                     Log::info('Payment Pending or In Process', ['payment_id' => $paymentId]);
-                    // Opcional: Actualizar el estado del pago en tu base de datos a pendiente
-                    // Puedes registrar el pago aquí si lo deseas, con estado pendiente
+                    // Registrar el pago en la base de datos con estado pendiente
+                    $this->recordPayment($payment);
                 } else if ($payment && $payment->status === 'rejected') {
                     Log::warning('Payment Rejected', ['payment_id' => $paymentId, 'status_detail' => $payment->status_detail]);
-                    // Opcional: Actualizar el estado del pago en tu base de datos a rechazado
-                    // Puedes registrar el pago aquí si lo deseas, con estado rechazado
+                    // Registrar el pago en la base de datos con estado rechazado
+                    $this->recordPayment($payment);
                 }
             } catch (\MercadoPago\Exceptions\MPApiException $e) {
                 $apiResponse = $e->getApiResponse();
@@ -209,6 +209,31 @@ class MercadoPagoController extends \App\Http\Controllers\Controller
     //         ]);
     //     }
     // }
+
+    /**
+     * Registra un pago en la base de datos.
+     */
+    private function recordPayment($payment)
+    {
+        $metadata = (array) $payment->metadata;
+        $userId = $metadata['user_id'] ?? null;
+        $membershipPlanId = $metadata['membership_plan_id'] ?? null;
+
+        Payment::create([
+            'user_id' => $userId,
+            'membership_plan_id' => $membershipPlanId,
+            'amount' => $payment->transaction_amount,
+            'currency' => $payment->currency_id,
+            'payment_method' => $payment->payment_method_id,
+            'status' => $payment->status,
+            'external_id' => $payment->id,
+            'external_reference' => $payment->external_reference,
+            'external_status' => $payment->status_detail,
+            'processed_at' => now(),
+            'metadata' => $metadata,
+        ]);
+        Log::info('Payment recorded in database with status', ['payment_id' => $payment->id, 'status' => $payment->status]);
+    }
 
     /**
      * Mapear estados de Mercado Pago a estados locales
