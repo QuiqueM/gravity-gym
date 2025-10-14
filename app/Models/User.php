@@ -28,6 +28,7 @@ class User extends Authenticatable implements MustVerifyEmail
         'password',
         'phone',
         'avatar',
+        'qr_code',
     ];
 
     /**
@@ -131,6 +132,13 @@ class User extends Authenticatable implements MustVerifyEmail
     }
     
     protected function avatar(): Attribute
+    {
+        return Attribute::make(
+            get: fn ($value) => $value ? Storage::url($value) : null,
+        );
+    }
+
+    protected function qrCode(): Attribute
     {
         return Attribute::make(
             get: fn ($value) => $value ? Storage::url($value) : null,

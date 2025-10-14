@@ -5,15 +5,16 @@ use App\Http\Controllers\Memberships\MembershipController;
 use App\Http\Middleware\EnsureUserIsAdmin;
 use App\Http\Controllers\Users\UserController;
 use App\Http\Controllers\Classes\ClassController;
+use App\Http\Controllers\Admin\EventController;
 
 Route::middleware(['auth',EnsureUserIsAdmin::class])->group(function () {
     Route::get('memberships-plan/create', [MembershipController::class, 'createMembershipPlan'])
-        ->name('memberships-plan.create');
+    ->name('memberships-plan.create');
     Route::post('memberships-plan', [MembershipController::class, 'storeMembershipPlan'])->name('memberships-plan.store');
     Route::get('memberships-plan/{plan}/edit', [MembershipController::class, 'edit'])->name('memberships-plan.edit');
     Route::put('memberships-plan/{plan}', [MembershipController::class, 'update'])->name('memberships-plan.update');
     Route::post('membership', [MembershipController::class, 'store'])->name('memberships.store');
-
+    
     Route::resource('users', UserController::class)->names([
         'index' => 'admin.users.index',
         'create' => 'admin.users.create',
@@ -23,7 +24,13 @@ Route::middleware(['auth',EnsureUserIsAdmin::class])->group(function () {
         'update' => 'admin.users.update',
         'destroy' => 'admin.users.destroy',
     ]);
-
+    
+    Route::resource('events', EventController::class)->names([
+        'index' => 'events.index',
+        'create' => 'events.create',
+        'store' => 'events.store',
+        'show' => 'events.show',
+    ]);
     Route::get('classes/type/create', [ClassController::class, 'createType'])->name('classes.type.create');
     Route::post('classes/type', [ClassController::class, 'storeType'])->name('classes.type.store');
     Route::get('classes/create', [ClassController::class, 'createClass'])->name('classes.create');

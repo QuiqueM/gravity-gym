@@ -55,6 +55,7 @@ class UserController extends Controller
             'role_id' => $request->role_id,
             'phone' => $request->phone,
             'password' => Hash::make($request->password),
+            'qr_code' => null, // El QR se genera después
         ]);
 
         return to_route('admin.users.index')->with('success', 'Usuario creado');

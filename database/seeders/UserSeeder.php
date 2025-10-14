@@ -7,6 +7,7 @@ use App\Models\User;
 use App\Models\Role;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Storage;
 
 class UserSeeder extends Seeder
 {
@@ -18,7 +19,19 @@ class UserSeeder extends Seeder
             'phone' => '555-0001',
             'password' => Hash::make('password'),
             'remember_token' => Str::random(10),
+            'qr_code' => null, // Se genera después
         ]);
+
+        // Generar QR para el admin y guardarlo en S3
+        $qrData = json_encode(['id' => $admin->id, 'email' => $admin->email]);
+        $localPath = sys_get_temp_dir() . '/user_' . $admin->id . '.png';
+        \SimpleSoftwareIO\QrCode\Facades\QrCode::format('png')->size(300)->generate($qrData, $localPath);
+        $s3Path = 'qrCodes/user_' . $admin->id . '.png';
+        $fileStream = fopen($localPath, 'r');
+        Storage::disk('s3')->put($s3Path, $fileStream);
+        fclose($fileStream);
+        unlink($localPath);
+        $admin->update(['qr_code' => $s3Path]);
         $admin->roles()->sync([Role::where('name', 'Admin')->first()->id]);
 
         // Crear 3 coach

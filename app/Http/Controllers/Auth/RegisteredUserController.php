@@ -15,6 +15,7 @@ use Inertia\Response;
 use App\Models\Role;
 use App\Models\MembershipPlan;
 use App\Models\Membership;
+use Illuminate\Support\Facades\Storage;
 
 class RegisteredUserController extends Controller
 {
@@ -47,6 +48,18 @@ class RegisteredUserController extends Controller
             'password' => Hash::make($request->password),
         ]);
 
+        // Generar el QR con id y email y almacenarlo en S3
+        $qrData = json_encode(['id' => $user->id, 'email' => $user->email]);
+        $localPath = sys_get_temp_dir() . '/user_' . $user->id . '.png';
+        \SimpleSoftwareIO\QrCode\Facades\QrCode::format('png')->size(300)->generate($qrData, $localPath);
+        $s3Path = 'qrCodes/user_' . $user->id . '.png';
+        $fileStream = fopen($localPath, 'r');
+        Storage::disk('s3')->put($s3Path, $fileStream);
+        fclose($fileStream);
+        unlink($localPath);
+        $user->qr_code = $s3Path;
+        $user->save();
+
         // Asignar el rol 'Member' al usuario registrado
         $memberRole = Role::where('name', 'Member')->first();
         if ($memberRole) {
@@ -58,8 +71,8 @@ class RegisteredUserController extends Controller
             Membership::create([
                 'user_id' => $user->id,
                 'membership_plan_id' => $initialPlan->id,
-                'starts_at' => now(),
-                'ends_at' => now()->addDays($initialPlan->duration_days),
+                'starts_at' => now()->tz('America/Mexico_City'),
+                'ends_at' => now()->addDays($initialPlan->duration_days)->tz('America/Mexico_City'),
                 'is_active' => true,
                 'remaining_classes' => $initialPlan->class_limit,
             ]);
