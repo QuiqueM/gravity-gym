@@ -12,6 +12,9 @@ export default defineConfig({
             strategies: 'generateSW',
             swDest: 'public/sw.js',
             workbox: {
+                modifyURLPrefix: {
+                    '': '/build/'
+                },
                 globPatterns: ['**/*.{js,css,png,svg,ico}'],
                 runtimeCaching: [
                     {
