@@ -8,10 +8,10 @@ use App\Http\Controllers\Attendance\AttendanceController;
 use App\Http\Controllers\Dashboard\DashboardController;
 use App\Http\Controllers\Users\UserController;
 use App\Http\Controllers\Payments\MercadoPagoController;
+use App\Http\Controllers\Welcome\WelcomeController;
 
-Route::get('/', function () {
-    return Inertia::render('Welcome');
-})->name('home');
+
+Route::get('/', [WelcomeController::class, 'index'])->name('home');
 
 Route::post('/payments/mercadopago/webhook', [MercadoPagoController::class, 'handleWebhook'])->name('payments.mercadopago.webhook');
 

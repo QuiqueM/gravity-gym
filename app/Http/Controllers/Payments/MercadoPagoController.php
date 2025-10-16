@@ -41,19 +41,19 @@ class MercadoPagoController extends \App\Http\Controllers\Controller
                   "failure" => route('payments.mercadopago.failure'),
                   "pending" => route('payments.mercadopago.pending'),
               ],
-              "notification_url" => route('payments.mercadopago.webhook'),
+            //   "notification_url" => route('payments.mercadopago.webhook'),
               "external_reference" => $user->id . '-' . ($plan['id'] ?? '') . '-' . time(), // Referencia única para tu sistema
               "metadata" => [
                   "user_id" => $user->id,
                   "membership_plan_id" => $plan['id'] ?? null,
                   "payment_type" => "membership",
               ],
-              "auto_return" => "approved", // Redireccionar automáticamente después del pago aprobado
-              "expires" => true,
-              "expiration_date_from" => now()->toIso8601String(),
-              "expiration_date_to" => now()->addHours(24)->toIso8601String(),
+            //   "auto_return" => "approved", // Redireccionar automáticamente después del pago aprobado
+            //   "expires" => true,
+            //   "expiration_date_from" => now()->toIso8601String(),
+            //   "expiration_date_to" => now()->addHours(24)->toIso8601String(),
           ]);
-          return Inertia::location($preference->init_point);
+          return Inertia::location($preference->sandbox_init_point);
         } catch (\Exception $e) {
             Log::error('Error creando preferencia de Mercado Pago', [
                 'error' => $e->getMessage(),

@@ -1,6 +1,14 @@
 <script lang="ts" setup>
 import { Link } from '@inertiajs/vue3';
 import Icon from '@/components/Icon.vue';
+import { User } from '@/types';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { useInitials } from '@/composables/useInitials';
+
+const { getInitials } = useInitials();
+defineProps<{
+  user: User | null;
+}>();
 </script>
 <template>
   <header
@@ -16,15 +24,23 @@ import Icon from '@/components/Icon.vue';
       </div>
       <Link
         class="flex max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-full h-10 px-2.5 md:px-4  text-white text-sm font-bold leading-normal tracking-[0.015em]"
-        :href="route('register')">
-        <span class="truncate hidden md:flex">Registrate</span>
-        <Icon name="userPlus" class="h-5 w-5 md:hidden" />
+        :href="route('register')" v-if="!user">
+      <span class="truncate hidden md:flex">Registrate</span>
+      <Icon name="userPlus" class="h-5 w-5 md:hidden" />
       </Link>
       <Link
         class="flex  max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-full h-10 px-2.5 md:px-4 bg-primary text-white text-sm font-bold leading-normal tracking-[0.015em]"
-        :href="route('login')">
-        <span class="truncate hidden md:flex">Inicia Sesión</span>
-        <Icon name="logIn" class="h-5 w-5 md:hidden" />
+        :href="route('login')" v-if="!user">
+      <span class="truncate hidden md:flex">Inicia Sesión</span>
+      <Icon name="logIn" class="h-5 w-5 md:hidden" />
+      </Link>
+      <Link :href="route('dashboard')" v-else class="flex items-center">
+      <Avatar class="size-10 overflow-hidden rounded-full">
+        <AvatarImage :src="user.avatar!" :alt="user.name" />
+        <AvatarFallback class="rounded-lg text-black dark:text-white">
+          <span class="text-sm">{{ getInitials(user.name) }}</span>
+        </AvatarFallback>
+      </Avatar>
       </Link>
     </div>
   </header>

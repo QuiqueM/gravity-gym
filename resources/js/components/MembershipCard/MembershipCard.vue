@@ -2,7 +2,7 @@
 import { computed } from 'vue';
 interface Props {
   title: string;
-  price: number|string;
+  price: number;
   frequency: number;
   features: string[];
 }

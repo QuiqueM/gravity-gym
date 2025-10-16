@@ -52,11 +52,12 @@ class UserController extends Controller
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
-            'role_id' => $request->role_id,
             'phone' => $request->phone,
             'password' => Hash::make($request->password),
             'qr_code' => null, // El QR se genera después
         ]);
+
+        $user->roles()->sync([$request->role_id]);
 
         return to_route('admin.users.index')->with('success', 'Usuario creado');
     }

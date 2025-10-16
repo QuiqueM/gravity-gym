@@ -11,9 +11,10 @@ import DashboardMember from './Dashboard/DashboardMember.vue';
 
 const props = defineProps<{
   auth: Auth;
+  nextClass: any | null;
 }>();
 
-const { isAdmin } = useRole(props.auth.user.roles);
+const { isAdmin, isMember } = useRole(props.auth.user.roles);
 
 const breadcrumbs: BreadcrumbItem[] = [
   {
@@ -22,16 +23,9 @@ const breadcrumbs: BreadcrumbItem[] = [
   },
 ];
 
-const handleDashboard = computed(() => {
-  if (isAdmin.value) {
-    return DashboardAdmin;
-  }
-  return DashboardMember;
-});
 </script>
 
 <template>
-
   <Head title="Dashboard" />
 
   <AppLayout :breadcrumbs="breadcrumbs">
@@ -42,7 +36,8 @@ const handleDashboard = computed(() => {
           Aquí puedes gestionar la configuración de tu cuenta, ver tu actividad y más.
         </p>
       </section>
-      <component :is="handleDashboard" />
+      <DashboardMember v-if="isMember" :next-class="nextClass" />
+      <DashboardAdmin v-else-if="isAdmin" />
       <div
         class="relative min-h-[100vh] flex-1 rounded-xl border border-sidebar-border/70 md:min-h-min dark:border-sidebar-border">
         <PlaceholderPattern />

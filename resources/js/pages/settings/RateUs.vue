@@ -42,9 +42,10 @@ const submitReview =  () => {
 };
 
 const saveReview = () => {
-  reviewForm.post(route('reviews.store'), {
+  reviewForm.post(route('rate-us.store'), {
     onSuccess: () => {
       toast.success('Reseña enviada con éxito');
+      route.reload({ only: ['review'] });
     },
     onError: () => {
       toast.error('Error al enviar la reseña');
@@ -53,7 +54,7 @@ const saveReview = () => {
 }
 
 const updateReview = () => {
-  reviewForm.put(route('reviews.update', props.review!.id), {
+  reviewForm.put(route('rate-us.update', props.review!.id), {
     onSuccess: () => {
       toast.success('Reseña actualizada con éxito');
     },

@@ -47,6 +47,36 @@ export function useDates() {
   return start.diff(nowLocal(), 'hour', true) > 1;
 }
 
+  const formatDistance = (dateString: string): string => {
+    const date = dayjs(dateString).utc();
+    const now = dayjs().utc();
+    const diffInMinutes = now.diff(date, 'minute');
+
+    if (diffInMinutes < 1) {
+      return 'Justo ahora';
+    } else if (diffInMinutes < 60) {
+      return `${diffInMinutes} minuto${diffInMinutes > 1 ? 's' : ''} atrás`;
+    }
+
+    const diffInHours = now.diff(date, 'hour');
+    if (diffInHours < 24) {
+      return `${diffInHours} hora${diffInHours > 1 ? 's' : ''} atrás`;
+    }
+
+    const diffInDays = now.diff(date, 'day');
+    if (diffInDays < 30) {
+      return `${diffInDays} día${diffInDays > 1 ? 's' : ''} atrás`;
+    }
+
+    const diffInMonths = now.diff(date, 'month');
+    if (diffInMonths < 12) {
+      return `${diffInMonths} mes${diffInMonths > 1 ? 'es' : ''} atrás`;
+    }
+
+    const diffInYears = now.diff(date, 'year');
+    return `${diffInYears} año${diffInYears > 1 ? 's' : ''} atrás`;
+  }
+
   return {
     formatDate,
     formatDateTime,
@@ -57,5 +87,6 @@ export function useDates() {
     transformTimeZone,
     nowLocal,
     isMoreThanOneHour,
+    formatDistance,
   };
 }
