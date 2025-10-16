@@ -51,7 +51,7 @@ class HandleInertiaRequests extends Middleware
                             'roles' => $request->user()->roles()->pluck('name'),
                         ]
                     )
-                    : [],
+                    : null,
             ],
             'ziggy' => [
                 ...(new Ziggy)->toArray(),

@@ -22,6 +22,13 @@ export default defineConfig({
         }),
         VitePWA({
             registerType: 'autoUpdate',
+            manifestFilename: 'manifest.json',
+            strategies: 'injectManifest',
+            srcDir: 'resources/js',
+            filename: 'sw.js',
+            injectManifest: {
+                injectionPoint: undefined,
+            },
             manifest: {
                 name: 'Gravity Fit MX',
                 short_name: 'Gravity',

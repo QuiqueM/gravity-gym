@@ -32,9 +32,9 @@
 
         <title inertia>{{ config('app.name', 'Gravity') }}</title>
 
-        <link rel="icon" href="/favicon.ico" sizes="any">
-        <!-- <link rel="icon" href="/favicon.svg" type="image/svg+xml"> -->
-        <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+        <link rel="icon" href="{{asset('favicon.ico')}}" sizes="any">
+        <link rel="apple-touch-icon" href="{{asset('apple-touch-icon.png')}}">
+        <link rel="manifest" href="{{ asset('manifest.json') }}">
 
         <link rel="preconnect" href="https://fonts.bunny.net">
         <link href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600" rel="stylesheet" />
@@ -42,6 +42,13 @@
         @routes
         @vite(['resources/js/app.ts', "resources/js/pages/{$page['component']}.vue"])
         @inertiaHead
+
+        <script>
+            if ('serviceWorker' in navigator) {
+                // La ruta raíz buscará en tu dominio, activando la ruta de Laravel que creamos.
+                navigator.serviceWorker.register('/sw.js');
+            }
+        </script>
     </head>
     <body class="font-sans antialiased">
         @inertia

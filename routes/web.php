@@ -9,6 +9,22 @@ use App\Http\Controllers\Dashboard\DashboardController;
 use App\Http\Controllers\Users\UserController;
 use App\Http\Controllers\Payments\MercadoPagoController;
 use App\Http\Controllers\Welcome\WelcomeController;
+use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Response;
+
+Route::get('/sw.js', function () {
+    // Obtenemos el archivo compilado por Vite desde la carpeta public
+    $path = public_path('sw.js');
+
+    if (!File::exists($path)) {
+        abort(404);
+    }
+
+    $content = File::get($path);
+
+    // Lo servimos con la cabecera correcta
+    return Response::make($content)->header('Content-Type', 'application/javascript');
+});
 
 
 Route::get('/', [WelcomeController::class, 'index'])->name('home');

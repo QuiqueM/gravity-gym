@@ -17,11 +17,11 @@ defineProps<{
       <img src="/assets/logoNavbar.png" class="w-40" alt="logo grvity">
     </div>
     <div class="flex flex-1 justify-end gap-2 md:gap-6">
-      <div class="hidden md:flex items-center gap-9">
+      <!-- <div class="hidden md:flex items-center gap-9">
         <a class="text-white text-sm font-medium leading-normal" href="#">Classes</a>
         <a class="text-white text-sm font-medium leading-normal" href="#">Coach</a>
         <a class="text-white text-sm font-medium leading-normal" href="#">Ubicación</a>
-      </div>
+      </div> -->
       <Link
         class="flex max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-full h-10 px-2.5 md:px-4  text-white text-sm font-bold leading-normal tracking-[0.015em]"
         :href="route('register')" v-if="!user">
