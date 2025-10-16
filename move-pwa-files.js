@@ -5,7 +5,7 @@ const publicDir = 'public';
 const buildDir = path.join(publicDir, 'build');
 
 const filesToMove = [
-    'manifest.json',
+    'pwa-manifest.json',
     'sw.js',
     // Agrega aquí cualquier otro archivo de PWA que necesites mover, como los íconos si también están en 'build'
     // 'icon-196x196.png', 

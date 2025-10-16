@@ -22,7 +22,7 @@ export default defineConfig({
         }),
         VitePWA({
             registerType: 'autoUpdate',
-            manifestFilename: 'manifest.json',
+            manifestFilename: 'pwa-manifest.json',
             strategies: 'injectManifest',
             srcDir: 'resources/js',
             filename: 'sw.js',
