@@ -33,6 +33,7 @@ export default defineConfig({
                 name: 'Gravity Fit MX',
                 short_name: 'Gravity',
                 start_url: '/',
+                scope: '/',
                 display: 'standalone',
                 background_color: '#181411',
                 theme_color: '#2785bd',
