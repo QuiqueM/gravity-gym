@@ -6,28 +6,33 @@ import { VitePWA } from 'vite-plugin-pwa';
 
 export default defineConfig({
     plugins: [
-        laravel({
-            input: ['resources/js/app.ts'],
-            ssr: 'resources/js/ssr.ts',
-            refresh: true,
-        }),
-        tailwindcss(),
-        vue({
-            template: {
-                transformAssetUrls: {
-                    base: null,
-                    includeAbsolute: false,
-                },
-            },
-        }),
         VitePWA({
             registerType: 'autoUpdate',
             manifestFilename: 'pwa-manifest.json',
-            strategies: 'injectManifest',
-            srcDir: 'resources/js',
-            filename: 'sw.js',
-            injectManifest: {
-                injectionPoint: undefined,
+            strategies: 'generateSW',
+            swDest: 'public/sw.js',
+            workbox: {
+                globPatterns: ['**/*.{js,css,png,svg,ico}'],
+                runtimeCaching: [
+                    {
+                        urlPattern: /^https:\/\/fonts\.googleapis\.com\/.*/i,
+                        handler: 'CacheFirst',
+                        options: {
+                            cacheName: 'google-fonts-cache',
+                            expiration: {
+                                maxEntries: 10,
+                                maxAgeSeconds: 60 * 60 * 24 * 365 // <== 365 días
+                            },
+                            cacheableResponse: {
+                                statuses: [0, 200]
+                            }
+                        }
+                    }
+                ]
+            },
+            devOptions: {
+                enabled: true,
+                type: 'module',
             },
             manifest: {
                 name: 'Gravity Fit MX',
@@ -58,6 +63,20 @@ export default defineConfig({
                         },
                     ]
             }
-        })
+        }),
+        laravel({
+            input: ['resources/js/app.ts'],
+            ssr: 'resources/js/ssr.ts',
+            refresh: true,
+        }),
+        tailwindcss(),
+        vue({
+            template: {
+                transformAssetUrls: {
+                    base: null,
+                    includeAbsolute: false,
+                },
+            },
+        }),
     ],
 });
