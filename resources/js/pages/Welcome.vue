@@ -21,8 +21,8 @@ defineProps<{
       <link rel="preconnect" href="https://rsms.me/" />
       <link rel="stylesheet" href="https://rsms.me/inter/inter.css" />
     </Head>
-    <div class="relative flex size-full min-h-screen flex-col bg-[#181411] dark group/design-root overflow-x-hidden" style='font-family: Lexend, "Noto Sans", sans-serif;'>
-      <div class="layout-container flex h-full grow flex-col">
+    <div class="relative flex flex-col min-h-screen bg-black dark group/design-root overflow-x-hidden" style='font-family: Lexend, "Noto Sans", sans-serif;'>
+      <div class="layout-container flex flex-1 flex-col">
         <NavBar :user="auth.user" />
         <div class="md:px-40 flex flex-1 justify-center py-5">
           <div class="layout-content-container flex flex-col w-full max-w-[960px] flex-1">
@@ -36,10 +36,10 @@ defineProps<{
                     <h1
                       class="text-white text-4xl font-black leading-tight tracking-[-0.033em] @[480px]:text-5xl @[480px]:font-black @[480px]:leading-tight @[480px]:tracking-[-0.033em]"
                     >
-                      Elevate Your Fitness Journey
+                      Eleva tu experiencia fitness con Gravity
                     </h1>
                     <h2 class="text-white text-sm font-normal leading-normal @[480px]:text-base @[480px]:font-normal @[480px]:leading-normal">
-                      Experience the ultimate fitness destination with state-of-the-art equipment, expert trainers, and a vibrant community.
+                      Experimenta el destino fitness definitivo con las mejores instalaciones, entrenadores expertos y una comunidad vibrante.
                     </h2>
                   </div>
                   <Link
@@ -153,7 +153,7 @@ defineProps<{
               </div>
             </div>
             <h2 class="text-white text-[22px] font-bold leading-tight tracking-[-0.015em] px-4 pb-3 pt-5">Reseñas de los clientes</h2>
-            <div class="flex flex-col gap-8 overflow-x-hidden bg-[#181411] p-4">
+            <div class="flex flex-col gap-8 overflow-x-hidden p-4">
               <CommentUser v-for="(comment, index) in comments" :key="index" :comment="comment" />
             </div>
             <h2 class="text-white text-[22px] font-bold leading-tight tracking-[-0.015em] px-4 pb-3 pt-5">Opciones de Membresía</h2>
@@ -168,15 +168,18 @@ defineProps<{
             </div>
           </div>
         </div>
-        <footer class="flex justify-center">
+        <footer class="w-full mt-auto flex justify-center">
           <div class="flex max-w-[960px] flex-1 flex-col">
-            <footer class="flex flex-col gap-6 px-5 py-10 text-center @container">
-              <div class="flex flex-wrap items-center justify-center gap-6 @[480px]:flex-row @[480px]:justify-around">
+            <footer class="flex flex-col gap-6 px-5 pt-5 text-center @container">
+              <!-- <div class="flex flex-wrap items-center justify-center gap-6 @[480px]:flex-row @[480px]:justify-around">
                 <a class="text-[#b9a89d] text-base font-normal leading-normal min-w-40" href="#">Contact Us</a>
                 <a class="text-[#b9a89d] text-base font-normal leading-normal min-w-40" href="#">Privacy Policy</a>
                 <a class="text-[#b9a89d] text-base font-normal leading-normal min-w-40" href="#">Terms of Service</a>
-              </div>
-              <p class="text-[#b9a89d] text-base font-normal leading-normal">@2025 Gravity Fitness. All rights reserved.</p>
+              </div> -->
+              <p class="text-[#b9a89d] text-base font-normal leading-normal">© {{ new Date().getFullYear() }} Gravity Fit MX. Todos los derechos reservados.</p>
+              <span class="text-[#b9a89d] text-sm font-normal leading-normal">Hecho con ❤️ por <a href="https://github.com/QuiqueM" class="text-primary">Quique
+              </a> para Gravity Fit MX</span>
+             
             </footer>
           </div>
         </footer>

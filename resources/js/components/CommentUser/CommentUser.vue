@@ -13,7 +13,7 @@ defineProps<{
 }>();
 </script>
 <template>
-  <div class="flex flex-col gap-3 bg-[#181411]">
+  <div class="flex flex-col gap-3 ">
     <div class="flex items-center gap-3">
       <Avatar class="size-10 overflow-hidden rounded-full">
         <AvatarImage :src="comment.user.avatar!" :alt="comment.user.name" />
