@@ -107,12 +107,12 @@ const submit = () => {
             <Label for="requires_membership" class="mb-0">Requiere membresía</Label>
           </div>
 
-          <div class="flex justify-between items-center">
-            <Link :href="route('classes.index')">
-              <Button variant="outline" class="mt-2 w-full md:w-48">Cancelar</Button>
+          <div class="flex flex-col md:flex-row md:justify-between items-center gap-3">
+            <Link :href="route('classes.index')" class="w-full md:w-48">
+              <Button variant="outline" class="w-full md:w-48">Cancelar</Button>
             </Link>
 
-            <Button type="submit" class="mt-2 w-full md:w-48" :disabled="form.processing">
+            <Button type="submit" class="w-full md:w-48" :disabled="form.processing">
               <LoaderCircle v-if="form.processing" class="h-4 w-4 animate-spin" />
               Guardar
             </Button>

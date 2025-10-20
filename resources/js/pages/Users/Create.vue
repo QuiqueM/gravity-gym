@@ -105,8 +105,8 @@ const submit = () => {
           <InputError :message="form.errors.password_confirmation" />
         </div>
 
-        <div class="flex justify-between items-center">
-          <Link :href="route('admin.users.index')">
+        <div class="flex flex-col md:flex-row md:justify-between items-center gap-3">
+          <Link :href="route('admin.users.index')" class="w-full md:w-48">
             <Button variant="outline" class="w-full md:w-48">Cancelar</Button>
           </Link>
           <Button type="submit" class="w-full md:w-48" tabindex="5" :disabled="form.processing">

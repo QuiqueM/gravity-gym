@@ -57,12 +57,12 @@ const breadcrumbs: BreadcrumbItem[] = [
           </Link>
         </div>
         <div class="rounded-xl border divide-y">
-          <div v-for="item in classes.data" :key="item.id" class="flex items-center justify-between p-3">
+          <div v-for="item in classes.data" :key="item.id" class="flex flex-col md:flex-row md:items-center md:justify-between p-3">
             <div>
               <div class="font-medium">{{ item.title }}</div>
               <div class="text-sm text-muted-foreground">{{ item.type?.name }}</div>
             </div>
-            <div class="flex gap-x-2">
+            <div class="flex flex-row justify-stretch gap-2">
               <Link v-if="permissions.canAssignSchedules" :href="`/classes/${item.id}/schedules/create`"
                 class="text-primary">Asignar horarios</Link>
               <span class="text-gray-500">|</span>

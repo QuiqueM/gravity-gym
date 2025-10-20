@@ -79,8 +79,8 @@ const toggleDays = (dayValue: string) => {
 	<Head title="Crear horario" />
 	<AppLayout :breadcrumbs="breadcrumbs">
 		<form @submit.prevent="submit" class="w-full flex flex-col gap-4 p-4">
-			<div class="flex gap-4">
-				<div class="grid gap-4 w-1/2">
+			<div class="flex flex-col md:flex-row gap-4">
+				<div class="grid gap-4 w-full md:w-1/2">
 					<div class="grid gap-2">
 						<Label for="class_id">Clase</Label>
 						<Input id="class_id" :value="classSelected.title" required disabled :placeholder="classSelected.title" />
@@ -106,7 +106,7 @@ const toggleDays = (dayValue: string) => {
 						<Label for="repeat">Repetir horario</Label>
 					</div>
 				</div>
-				<div v-if="form.repeat" class="flex flex-col gap-3 w-1/2">
+				<div v-if="form.repeat" class="flex flex-col gap-3 w-full md:w-1/2">
 					<Label>Repetir en:</Label>
 					<div v-for="day in days" :key="day.value" class="flex items-center space-x-2">
 						<Checkbox :id="'day-' + day.value" :name="'day-' + day.value" :model-value="form.repeat_days.includes(day.value)" @update:model-value="toggleDays(day.value)" />
@@ -126,7 +126,7 @@ const toggleDays = (dayValue: string) => {
 						</div>
 				</div>
 			</div>
-			<div class="flex w-full justify-between">
+			<div class="flex w-full flex-col md:flex-row gap-3 md:justify-between">
 				<Link :href="route('classes.index')">
 					<Button variant="outline" class="mt-2 w-full md:w-48">Cancelar</Button>
 				</Link>
