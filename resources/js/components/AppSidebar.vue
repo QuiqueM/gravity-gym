@@ -4,7 +4,7 @@ import NavUser from '@/components/NavUser.vue';
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar';
 import { type NavItem } from '@/types';
 import { Link } from '@inertiajs/vue3';
-import { LayoutGrid, Users2, CalendarClock, CheckCircle2, CreditCard, IdCard } from 'lucide-vue-next';
+import { LayoutGrid, Users2, CalendarClock, CheckCircle2, CreditCard, IdCard, House, PartyPopper, BadgePercent } from 'lucide-vue-next';
 import AppLogo from './AppLogo.vue';
 import { usePage } from '@inertiajs/vue3'
 import { useRole } from '@/composables/useRole';
@@ -59,6 +59,24 @@ const mainNavItems: NavItem[] = [
         title: 'Usuarios',
         href: '/users',
         icon: Users2,
+        isVisible: isAdmin.value,
+    },
+    {
+        title: 'Sucursales',
+        href: '/branches',
+        icon: House,
+        isVisible: isAdmin.value,
+    },
+    {
+        title: 'Eventos',
+        href: '/events',
+        icon: PartyPopper,
+        isVisible: isAdmin.value,
+    },
+    {
+        title: 'Promociones',
+        href: '/promotions',
+        icon: BadgePercent,
         isVisible: isAdmin.value,
     },
 ];

@@ -6,6 +6,8 @@ use App\Http\Middleware\EnsureUserIsAdmin;
 use App\Http\Controllers\Users\UserController;
 use App\Http\Controllers\Classes\ClassController;
 use App\Http\Controllers\Admin\EventController;
+use App\Http\Controllers\Admin\BranchController;
+use App\Http\Controllers\Admin\PromotionController;
 
 Route::middleware(['auth',EnsureUserIsAdmin::class])->group(function () {
     Route::get('memberships-plan/create', [MembershipController::class, 'createMembershipPlan'])
@@ -38,4 +40,21 @@ Route::middleware(['auth',EnsureUserIsAdmin::class])->group(function () {
     Route::get('classes/{class}/schedules/create', [ClassController::class, 'createSchedule'])->name('classes.schedules.create');
     Route::post('classes/{class}/schedules', [ClassController::class, 'storeSchedule'])->name('classes.schedules.store');
 
+    Route::resource('branches', BranchController::class)->names([
+        'index' => 'admin.branches.index',
+        'create' => 'admin.branches.create',
+        'store' => 'admin.branches.store',
+        'edit' => 'admin.branches.edit',
+        'update' => 'admin.branches.update',
+        'destroy' => 'admin.branches.destroy',
+    ]);
+
+    Route::resource('promotions', PromotionController::class)->names([
+        'index' => 'admin.promotions.index',
+        'create' => 'admin.promotions.create',
+        'store' => 'admin.promotions.store',
+        'edit' => 'admin.promotions.edit',
+        'update' => 'admin.promotions.update',
+        'destroy' => 'admin.promotions.destroy',
+    ]);
 });

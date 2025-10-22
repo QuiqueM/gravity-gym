@@ -23,6 +23,8 @@ class DatabaseSeeder extends Seeder
             // ClassScheduleSeeder::class,
             // ClassRegistrationSeeder::class,
             // AttendanceSeeder::class,
+            BranchSeeder::class,
+            PromotionSeeder::class,
         ]);
     }
 }
