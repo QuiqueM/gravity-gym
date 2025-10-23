@@ -3,9 +3,10 @@ import { Head, Link } from '@inertiajs/vue3';
 import NavBar from '@/components/navbar/NavBar.vue';
 import MembershipCard from '@/components/MembershipCard/MembershipCard.vue';
 import CommentUser from '@/components/CommentUser/CommentUser.vue';
-import type { User } from '@/types';
+import type { User, Promotion, Branch } from '@/types';
 import type { CommentWithUser } from '@/types/Comments';
 import { Plan } from '@/types/membership';
+import type { Event } from '@/types/Event';
 
 defineProps<{
   auth: {
@@ -13,6 +14,9 @@ defineProps<{
   };
   comments: CommentWithUser[];
   plans: Plan[];
+  events: Event[];
+  promotions: Promotion[];
+  branches: Branch[];
 }>();
 </script>
 
@@ -51,108 +55,53 @@ defineProps<{
                 </div>
               </div>
             </div>
-            <h2 class="text-white text-[22px] font-bold leading-tight tracking-[-0.015em] px-4 pb-3 pt-5">Promotions</h2>
+            <h2 v-if="promotions.length" class="text-white text-[22px] font-bold leading-tight tracking-[-0.015em] px-4 pb-3 pt-5">Promociones</h2>
             <div class="flex overflow-y-auto [-ms-scrollbar-style:none] [scrollbar-width:none] [&amp;::-webkit-scrollbar]:hidden">
               <div class="flex items-stretch p-4 gap-3">
-                <div class="flex h-full flex-1 flex-col gap-4 rounded-lg min-w-60">
+                <div v-for="promotion in promotions" :key="promotion.id" class="flex h-full flex-1 flex-col gap-4 rounded-lg min-w-60">
                   <div
                     class="w-full bg-center bg-no-repeat aspect-video bg-cover rounded-xl flex flex-col"
-                    style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCbUrID5wwe45HEQIclc1EYCtikhcx5ZxOc5FNwNIrCQldW76ZdQyLzug0yr7MlvONWE1MJ1bLzBHa68rg_r9eJfUFBGWARvqqT2n53dAWoJyXUfGoa-no0A85nPD_yRV9zYo0IObWAbqrzu0osjqJvW1-siqFN19mqQre2w0kQuDDfpQ4qKyixeiomgT4_YqYsluLy1_ytNwpxQen3fwnX2tZCS5UCDFedP0JyVOkpywWsbQDxfSMVU3xcpJiO7CJEW0VhQEJWW-8");'
+                    :style="`background-image: url(${promotion.image});`"
                   ></div>
                   <div>
-                    <p class="text-white text-base font-medium leading-normal">Group Fitness Classes</p>
-                    <p class="text-[#b9a89d] text-sm font-normal leading-normal">Join our high-energy group fitness classes led by certified instructors.</p>
-                  </div>
-                </div>
-                <div class="flex h-full flex-1 flex-col gap-4 rounded-lg min-w-60">
-                  <div
-                    class="w-full bg-center bg-no-repeat aspect-video bg-cover rounded-xl flex flex-col"
-                    style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBSRupgtdPzUmkceNGeMxB-aGTH0qZQPN1tvT7AtZjyG55C4YGUP-9tycPQ8bIXUHeAH-GIF7JOIl3bbuj2w2gC9IxQgYhRYsyZLDcmbo0qxpeAQ2oU4-wR2qy7As6uazKhMPMvS7VLRL0iSpN0R0sMajw72E6LpOS6EBn2OMmH9meafaGSBNgb42B85de0VZyOHzRjVMtiDWiEH48gjc3REO7GwT3oBW5z4CEfCGuuaOseqbBUq22idPRH7Sn5nL_979DT4qu2ijo");'
-                  ></div>
-                  <div>
-                    <p class="text-white text-base font-medium leading-normal">Personal Training</p>
-                    <p class="text-[#b9a89d] text-sm font-normal leading-normal">Achieve your fitness goals with personalized training programs.</p>
-                  </div>
-                </div>
-                <div class="flex h-full flex-1 flex-col gap-4 rounded-lg min-w-60">
-                  <div
-                    class="w-full bg-center bg-no-repeat aspect-video bg-cover rounded-xl flex flex-col"
-                    style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBAU1FQzKaB1T8JA336_bmKzaBaWMTTQ5Til0-79s21N_IneLej8XkvK2N-8VZBtv9UJh2urTpaRob9E8q08T16k3haT5PCCjpZ-KsSnur7i5J-Zyp-jUn5cjxLFAUvVJlgYp8EqFYMlwRGpBzN4TOcWjDE_wI8ftU9ATrokf7PjJyAG_OS7I8tFCtFAMv05t7S_MB-K66TalgB_sFaCUvwb-AV_4vmxuABgPWPpK4p0Qs0SQMuojaK_n90VZaBKMhtVh80QIJUzBY");'
-                  ></div>
-                  <div>
-                    <p class="text-white text-base font-medium leading-normal">State-of-the-Art Equipment</p>
-                    <p class="text-[#b9a89d] text-sm font-normal leading-normal">Work out with the latest and most advanced gym equipment.</p>
+                    <p class="text-white text-base font-medium leading-normal">{{ promotion.name }}</p>
+                    <p class="text-[#b9a89d] text-sm font-normal leading-normal">{{ promotion.description }}</p>
                   </div>
                 </div>
               </div>
             </div>
-            <h2 class="text-white text-[22px] font-bold leading-tight tracking-[-0.015em] px-4 pb-3 pt-5">Upcoming Events</h2>
-            <div class="grid grid-cols-[repeat(auto-fit,minmax(158px,1fr))] gap-3 p-4">
-              <div class="flex flex-col gap-3 pb-3">
-                <div
-                  class="w-full bg-center bg-no-repeat aspect-video bg-cover rounded-xl"
-                  style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBiwhNL81bZ-nsT-dih2-4lam5UVnryWIjnDwbHdmD_5UZzhDGvfCMqVx0DVHiWu76DrxX5jYzg-6GkVEzyiu-2WbBbi3hBCbCKRraVx83ZKhxv_bh5jSugwml0hEa_nbU3uSNaa4YtkU2c3kwMuZpi6cS-UO6eo0xVM5n1q22Hv3j42TSLOUWIe_d5V446tGK6jVc0Tfi93yyiFRjKmzW1i1jK2OFt1RXkM8ZHFxWdEUlmEuAmBVw501KPUf0RWsC1dYHIIR2sAog");'
-                ></div>
-                <div>
-                  <p class="text-white text-base font-medium leading-normal">Yoga Workshop</p>
-                  <p class="text-[#b9a89d] text-sm font-normal leading-normal">Join our yoga workshop to improve flexibility and mindfulness.</p>
-                </div>
-              </div>
-              <div class="flex flex-col gap-3 pb-3">
-                <div
-                  class="w-full bg-center bg-no-repeat aspect-video bg-cover rounded-xl"
-                  style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBdn7oR7lqKKO0vfnYFLtxelATY2qziZ3HzDxeSzSArwcj9muhfKqy4tq2kfEhz8HWit-6laEzd5nrp3aKqESH86mvVkRjBV9rRxtX9YmimgwEUL2EFHx75KRTcGE9awOw-lMhKOg6Uz2KbmosRbSecC3tHEViG2J6Gq1guIbteCqhE4wWnvrf_8nzmcPJgbU9bsj9nyKEIwNfQB1cEjyO_Ws1-G7BQUcjhOM0FZmBqz6zfhK2wJWNtc_QoA3GqQaO-ZfA5LMx6DuQ");'
-                ></div>
-                <div>
-                  <p class="text-white text-base font-medium leading-normal">Strength Training Seminar</p>
-                  <p class="text-[#b9a89d] text-sm font-normal leading-normal">Learn advanced strength training techniques from our expert trainers.</p>
-                </div>
-              </div>
-              <div class="flex flex-col gap-3 pb-3">
-                <div
-                  class="w-full bg-center bg-no-repeat aspect-video bg-cover rounded-xl"
-                  style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBx7lB1oHr4RSTTJZXOPYyZ0t2oIYMJOEGe1q4iww_gxpEiOxa36OFVkFsCiJea7KypW61e1vDGe3rBibqy4GHF0tiEXrc4tJzoQybDPHvDeeR5Q9jGlt3NUjXpDdCVY9qpStYZw5lvVrBMMYQTAwApECBCIlZakg77TVCgXJwpdaPheLxYZaUSZc-W69Eg9IpMp2oSgIHxDJ3vR7mYJ-gK1rhUjJDlk9HCJ90V360XHZUHmqLbHMbVlvq9cUPidwimzvwx-iW_7Ec");'
-                ></div>
-                <div>
-                  <p class="text-white text-base font-medium leading-normal">Nutrition Workshop</p>
-                  <p class="text-[#b9a89d] text-sm font-normal leading-normal">Discover the secrets to a healthy diet and optimal nutrition.</p>
+            <h2 v-if="events.length" class="text-white text-[22px] font-bold leading-tight tracking-[-0.015em] px-4 pb-3 pt-5">Proximos Eventos</h2>
+            <div class="flex overflow-y-auto [-ms-scrollbar-style:none] [scrollbar-width:none] [&amp;::-webkit-scrollbar]:hidden">
+              <div class="flex items-stretch p-4 gap-3">
+                <div v-for="event in events" :key="event.id" class="flex h-full flex-1 flex-col gap-4 rounded-lg min-w-60">
+                  <div
+                    class="w-full bg-center bg-no-repeat aspect-video bg-cover rounded-xl flex flex-col"
+                    :style="`background-image: url(${event.image});`"
+                  ></div>
+                  <div>
+                    <p class="text-white text-base font-medium leading-normal">{{ event.title }}</p>
+                    <p class="text-[#b9a89d] text-sm font-normal leading-normal">{{ event.description }}</p>
+                  </div>
                 </div>
               </div>
             </div>
-            <h2 class="text-white text-[22px] font-bold leading-tight tracking-[-0.015em] px-4 pb-3 pt-5">Our Locations</h2>
-            <div class="grid grid-cols-[repeat(auto-fit,minmax(158px,1fr))] gap-3 p-4">
-              <div class="flex flex-col gap-3 pb-3">
-                <div
-                  class="w-full bg-center bg-no-repeat aspect-video bg-cover rounded-xl"
-                  style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCMSwTNJ-UXTw9eNtK2OkVNvsuRLm2956ktyzIRY_bgebyVJ5f2HRPABopFTEJyUrWYwpMFEi-n1cWdANeOAskQPcM_x-61U10-NsxBtAcofeKV6yMiTyFrFcPh9KIXzV6_NuzOnvfYLpgRRHykYrIHHLkJ7nVs6-DQrGKF7AuD4GJbYMmgjxEHA296cNu_pLA9k5w26v8CMklLktXst0Om3DiTcxLfGEHigQdKQ2dChpK6Z1r_oB1Dk9MGogbS7Q9Nqxjl1QDojcc");'
-                ></div>
-                <div>
-                  <p class="text-white text-base font-medium leading-normal">Downtown</p>
-                  <p class="text-[#b9a89d] text-sm font-normal leading-normal">Find us in the heart of the city.</p>
-                </div>
-              </div>
-              <div class="flex flex-col gap-3 pb-3">
-                <div
-                  class="w-full bg-center bg-no-repeat aspect-video bg-cover rounded-xl"
-                  style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuA5LHgYg3caHiEjZqizURm-J4FFeHBM5itM_42nVUm6uPviUE4JiFZAAkNIzYkkliBLA1l37FMMpRVL0f8dLkj3atftU8_Zs_qvKiEIHnDQiLN-TIAX-kXccGnyiX8BUikZSF6XxP5_suaTZGh87hMhIyids5KnyZxQk3gxgva-nu3HqnCWT2FlKVNvSvqOs2um6A-mh_5cpdLKCrHpSYCYFc7c92mbRjRMRlfGGpyK1-QMhJfAUfBwmaYkwnA0tda96HJ2l-xK_C0");'
-                ></div>
-                <div>
-                  <p class="text-white text-base font-medium leading-normal">Uptown</p>
-                  <p class="text-[#b9a89d] text-sm font-normal leading-normal">Located in the vibrant uptown district.</p>
-                </div>
-              </div>
-              <div class="flex flex-col gap-3 pb-3">
-                <div
-                  class="w-full bg-center bg-no-repeat aspect-video bg-cover rounded-xl"
-                  style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAPwXYuQ4iWz-G8LLEudgtASZGdLq_4apgvZ73TQI9B0XFK_cfO359zOEjadtyDrJR63tOSu9KDbSSvh8iFCIBS-nvTJo-8yRXeLc02ZJ5x57MXPPimZxA3AzquvE3vx_rTTYXeFfuxCaiezQ_9Ycpv-aTq91UnJ5UYzCh49hL_qG2G_DQ_WXGlClqjdbdFoza4BGdOhlWFplcM-qRAAvZPjW0CCn-HTpvCM9gSjcfuMaBRnkTETdLcB2pll-bylYFdCEvr2d-RKa4");'
-                ></div>
-                <div>
-                  <p class="text-white text-base font-medium leading-normal">Midtown</p>
-                  <p class="text-[#b9a89d] text-sm font-normal leading-normal">Conveniently situated in midtown.</p>
+            <h2 v-if="branches.length" class="text-white text-[22px] font-bold leading-tight tracking-[-0.015em] px-4 pb-3 pt-5">Ubicación</h2>
+            <div class="flex overflow-y-auto [-ms-scrollbar-style:none] [scrollbar-width:none] [&amp;::-webkit-scrollbar]:hidden">
+              <div class="flex items-stretch p-4 gap-3">
+                <div v-for="branch in branches" :key="branch.id" class="flex h-full flex-1 flex-col gap-4 rounded-lg min-w-60">
+                  <div
+                    class="w-full bg-center bg-no-repeat aspect-video bg-cover rounded-xl flex flex-col"
+                    :style="`background-image: url(${branch.image});`"
+                  ></div>
+                  <div>
+                    <p class="text-white text-base font-medium leading-normal">{{ branch.name }}</p>
+                    <p class="text-[#b9a89d] text-sm font-normal leading-normal">{{ branch.address }}</p>
+                  </div>
                 </div>
               </div>
             </div>
-            <h2 class="text-white text-[22px] font-bold leading-tight tracking-[-0.015em] px-4 pb-3 pt-5">Reseñas de los clientes</h2>
+
+            <h2 v-if="comments.length" class="text-white text-[22px] font-bold leading-tight tracking-[-0.015em] px-4 pb-3 pt-5">Reseñas de los clientes</h2>
             <div class="flex flex-col gap-8 overflow-x-hidden p-4">
               <CommentUser v-for="(comment, index) in comments" :key="index" :comment="comment" />
             </div>
@@ -177,7 +126,7 @@ defineProps<{
                 <a class="text-[#b9a89d] text-base font-normal leading-normal min-w-40" href="#">Terms of Service</a>
               </div> -->
               <p class="text-[#b9a89d] text-base font-normal leading-normal">© {{ new Date().getFullYear() }} Gravity Fit MX. Todos los derechos reservados.</p>
-              <span class="text-[#b9a89d] text-sm font-normal leading-normal">Hecho con ❤️ por <a href="https://github.com/QuiqueM" class="text-primary">Quique
+              <span class="text-[#b9a89d] text-xs font-normal leading-normal">Hecho con ❤️ por <a href="https://github.com/QuiqueM" class="text-primary">Quique
               </a> para Gravity Fit MX</span>
              
             </footer>

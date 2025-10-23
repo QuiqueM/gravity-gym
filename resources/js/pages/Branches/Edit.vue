@@ -9,16 +9,7 @@ import InputError from '@/components/InputError.vue';
 import { LoaderCircle } from 'lucide-vue-next';
 import { Checkbox } from '@/components/ui/checkbox';
 import { toast } from 'vue-sonner';
-
-interface Branch {
-    id: number;
-    name: string;
-    address: string;
-    is_active: boolean;
-    image: string;
-    created_at: string;
-    updated_at: string;
-}
+import type { Branch } from '@/types';
 
 const props = defineProps<{
     branch: Branch;
@@ -84,7 +75,7 @@ const submit = () => {
                         <Label for="image">Imagen</Label>
                         <Input id="image" type="file" @input="form.image = $event.target.files[0]" />
                         <InputError :message="form.errors.image" />
-                        <img v-if="props.branch.image" :src="branch.image" alt="Branch Image" class="mt-2 h-24 w-24 object-cover" />
+                        <img v-if="branch.image" :src="branch.image" alt="Branch Image" class="mt-2 h-24 w-24 object-cover" />
                     </div>
 
                     <div class="flex flex-col md:flex-row md:justify-between items-center gap-3">

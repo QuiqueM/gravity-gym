@@ -9,16 +9,7 @@ import { debounce } from '@/lib/shared/utils';
 import { Head, Link, router } from '@inertiajs/vue3';
 import { ref, watch } from 'vue';
 import { toast } from 'vue-sonner';
-
-interface Branch {
-    id: number;
-    name: string;
-    address: string | null;
-    is_active: boolean;
-    image: string | null;
-    created_at: string;
-    updated_at: string;
-}
+import type { Branch } from '@/types';
 
 defineProps<{
     branches: Branch[];

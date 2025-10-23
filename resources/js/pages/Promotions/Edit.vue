@@ -10,16 +10,7 @@ import { LoaderCircle } from 'lucide-vue-next';
 import { Checkbox } from '@/components/ui/checkbox';
 import { toast } from 'vue-sonner';
 import { Textarea } from '@/components/ui/textarea';
-
-interface Promotion {
-    id: number;
-    name: string;
-    description: string | null;
-    is_active: boolean;
-    image: string | null;
-    created_at: string;
-    updated_at: string;
-}
+import type { Promotion } from '@/types';
 
 const props = defineProps<{
     promotion: Promotion;

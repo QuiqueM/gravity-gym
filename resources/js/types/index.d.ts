@@ -69,3 +69,23 @@ export interface UserWhithMembership extends User {
         plan: Plan;
     } | null;
 }
+
+interface Promotion {
+    id: number;
+    name: string;
+    description: string;
+    is_active: boolean;
+    image: string | null;
+    created_at: string;
+    updated_at: string;
+}
+
+interface Branch {
+    id: number;
+    name: string;
+    address: string;
+    is_active: boolean;
+    image: string | null;
+    created_at: string;
+    updated_at: string;
+}
