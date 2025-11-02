@@ -6,8 +6,10 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import InputError from '@/components/InputError.vue';
 import { Checkbox } from "@/components/ui/checkbox"
-import type { ScheduleProps, ScheduleForm } from '@/types/Schedule';
+import type { ScheduleProps } from '@/types/Schedule';
+import type { ClassSelected } from '@/types/Class';
 import type { BreadcrumbItem } from '@/types';
+import type { Branch } from '@/types/Branch';
 import {
   Select,
   SelectContent,
@@ -18,7 +20,22 @@ import {
 import { toast } from 'vue-sonner'
 import { useDates } from '@/composables/useDates';
 
-const props = defineProps<ScheduleProps>();
+interface ScheduleForm {
+    class_id: number;
+    starts_at: string;
+    ends_at: string;
+    branch_id: number | null;
+    repeat: boolean;
+    repeat_days: string[];
+    repeat_months: number;
+}
+
+interface CreateScheduleProps {
+    classSelected: ClassSelected;
+    branches: Branch[];
+}
+
+const props = defineProps<CreateScheduleProps>();
 const { transformTimeZone } = useDates();
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -31,7 +48,7 @@ const form = useForm<ScheduleForm>({
 	class_id: props.classSelected.id,
 	starts_at: '',
 	ends_at: '',
-	room: 'Gravity',
+	branch_id: null,
 	repeat: false,
 	repeat_days: [],
 	repeat_months: 1,
@@ -97,9 +114,16 @@ const toggleDays = (dayValue: string) => {
 						<InputError :message="form.errors.ends_at" />
 					</div>
 					<div class="grid gap-2">
-						<Label for="room">Lugar</Label>
-						<Input id="room" v-model="form.room" placeholder="Ej: Sala 1" />
-						<InputError :message="form.errors.room" />
+						<Label for="branch_id">Sucursal</Label>
+						<Select id="branch_id" v-model="form.branch_id">
+							<SelectTrigger class="w-full">
+								<SelectValue placeholder="Selecciona una sucursal" />
+							</SelectTrigger>
+							<SelectContent>
+								<SelectItem v-for="branch in branches" :key="branch.id" :value="branch.id">{{ branch.name }}</SelectItem>
+							</SelectContent>
+						</Select>
+						<InputError :message="form.errors.branch_id" />
 					</div>
 					<div class="flex items-center gap-2">
 						<Checkbox id="repeat" v-model="form.repeat" />

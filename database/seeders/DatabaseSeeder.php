@@ -25,6 +25,8 @@ class DatabaseSeeder extends Seeder
             // AttendanceSeeder::class,
             BranchSeeder::class,
             PromotionSeeder::class,
+            CategorySeeder::class,
+            ExerciseSeeder::class,
         ]);
     }
 }

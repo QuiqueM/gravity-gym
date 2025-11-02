@@ -4,7 +4,7 @@ import NavUser from '@/components/NavUser.vue';
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar';
 import { type NavItem } from '@/types';
 import { Link } from '@inertiajs/vue3';
-import { LayoutGrid, Users2, CalendarClock, CheckCircle2, CreditCard, IdCard, House, PartyPopper, BadgePercent } from 'lucide-vue-next';
+import { LayoutGrid, Users2, CalendarClock, CheckCircle2, CreditCard, IdCard, House, PartyPopper, BadgePercent, Dumbbell } from 'lucide-vue-next';
 import AppLogo from './AppLogo.vue';
 import { usePage } from '@inertiajs/vue3'
 import { useRole } from '@/composables/useRole';
@@ -78,6 +78,12 @@ const mainNavItems: NavItem[] = [
         href: '/promotions',
         icon: BadgePercent,
         isVisible: isAdmin.value,
+    },
+    {
+        title: 'Ejercicios',
+        href: '/exercises',
+        icon: Dumbbell,
+        isVisible: true,
     },
 ];
 

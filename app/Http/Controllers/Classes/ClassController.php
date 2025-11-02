@@ -12,6 +12,7 @@ use App\Models\Membership;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
+use App\Models\Branch;
 
 class ClassController extends Controller
 {
@@ -27,7 +28,10 @@ class ClassController extends Controller
     {
         return Inertia::render('classes/Schedules', [
             'classSelected' => $class->load('type', 'instructor'),
-            'schedules' => ClassSchedule::where('class_id', $class->id)->orderBy('starts_at')->get(),
+            'schedules' => ClassSchedule::where('class_id', $class->id)
+                ->where('starts_at', '>=', now())
+                ->orderBy('starts_at')
+                ->get(),
         ]);
     }
 
@@ -85,8 +89,10 @@ class ClassController extends Controller
 
     public function createSchedule(GymClass $class): Response
     {
+        $activeBranches = Branch::where('is_active', true)->get();
         return Inertia::render('classes/CreateSchedule', [
             'classSelected' => $class->load('type', 'instructor'),
+            'branches' => $activeBranches,
         ]);
     }
 
@@ -95,7 +101,7 @@ class ClassController extends Controller
         $request->validate([
             'starts_at' => 'required|date|after:now',
             'ends_at' => 'required|date|after:starts_at',
-            'room' => 'nullable|string|max:255',
+            'branch_id' => 'required|exists:branches,id',
             'repeat' => 'sometimes|boolean',
             'repeat_days' => 'sometimes|array',
             'repeat_days.*' => 'in:monday,tuesday,wednesday,thursday,friday,saturday,sunday',
@@ -107,7 +113,7 @@ class ClassController extends Controller
             'class_id' => $class->id,
             'starts_at' => $request->starts_at,
             'ends_at' => $request->ends_at,
-            'room' => $request->room,
+            'branch_id' => $request->branch_id,
         ]);
 
         // Si se selecciona repetir, crear horarios adicionales
@@ -148,7 +154,7 @@ class ClassController extends Controller
                                 'class_id' => $class->id,
                                 'starts_at' => $start,
                                 'ends_at' => $end,
-                                'room' => $request->room,
+                                'branch_id' => $request->branch_id,
                             ]);
                         }
                         // Siguiente semana

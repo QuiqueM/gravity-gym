@@ -1,5 +1,6 @@
 import type { Coach } from './Coach';
 import type { TypeClass } from './Class';
+import type { Branch } from './index';
 
 export interface ScheduleProps {
   classSelected: {
@@ -10,6 +11,7 @@ export interface ScheduleProps {
     type: TypeClass;
     instructor: Coach;
   };
+  branches: Branch[];
 }
 
 export interface ScheduleForm {

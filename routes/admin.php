@@ -8,6 +8,8 @@ use App\Http\Controllers\Classes\ClassController;
 use App\Http\Controllers\Admin\EventController;
 use App\Http\Controllers\Admin\BranchController;
 use App\Http\Controllers\Admin\PromotionController;
+use App\Http\Controllers\Admin\CategoryController;
+use App\Http\Controllers\Admin\ExerciseController;
 
 Route::middleware(['auth',EnsureUserIsAdmin::class])->group(function () {
     Route::get('memberships-plan/create', [MembershipController::class, 'createMembershipPlan'])
@@ -56,5 +58,23 @@ Route::middleware(['auth',EnsureUserIsAdmin::class])->group(function () {
         'edit' => 'admin.promotions.edit',
         'update' => 'admin.promotions.update',
         'destroy' => 'admin.promotions.destroy',
+    ]);
+
+    Route::resource('categories', CategoryController::class)->names([
+        'index' => 'admin.categories.index',
+        'create' => 'admin.categories.create',
+        'store' => 'admin.categories.store',
+        'edit' => 'admin.categories.edit',
+        'update' => 'admin.categories.update',
+        'destroy' => 'admin.categories.destroy',
+    ]);
+
+    Route::resource('exercises', ExerciseController::class)->names([
+        'index' => 'admin.exercises.index',
+        'create' => 'admin.exercises.create',
+        'store' => 'admin.exercises.store',
+        'edit' => 'admin.exercises.edit',
+        'update' => 'admin.exercises.update',
+        'destroy' => 'admin.exercises.destroy',
     ]);
 });
