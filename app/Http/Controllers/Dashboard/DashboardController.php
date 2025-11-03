@@ -32,6 +32,7 @@ class DashboardController extends Controller
                 ->with(['schedules' => function($q) {
                     $q->where('starts_at', '>', now());
                 }])
+                ->with('schedules.class')
                 ->get()
                 ->pluck('schedules')
                 ->flatten()

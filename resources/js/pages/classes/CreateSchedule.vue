@@ -7,9 +7,7 @@ import { Label } from '@/components/ui/label';
 import InputError from '@/components/InputError.vue';
 import { Checkbox } from "@/components/ui/checkbox"
 import type { ScheduleProps } from '@/types/Schedule';
-import type { ClassSelected } from '@/types/Class';
 import type { BreadcrumbItem } from '@/types';
-import type { Branch } from '@/types/Branch';
 import {
   Select,
   SelectContent,
@@ -30,12 +28,7 @@ interface ScheduleForm {
     repeat_months: number;
 }
 
-interface CreateScheduleProps {
-    classSelected: ClassSelected;
-    branches: Branch[];
-}
-
-const props = defineProps<CreateScheduleProps>();
+const props = defineProps<ScheduleProps>();
 const { transformTimeZone } = useDates();
 
 const breadcrumbs: BreadcrumbItem[] = [

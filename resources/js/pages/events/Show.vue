@@ -8,7 +8,7 @@
       <strong>Descripción:</strong> {{ event.description }}
     </div>
     <div class="mb-4">
-      <strong>Clase:</strong> {{ event.gym_class?.name }}
+      <strong>Clase:</strong> {{ event.gym_class?.title }}
     </div>
     <div class="mb-4">
       <strong>Imagen:</strong>
@@ -18,8 +18,9 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { Link } from '@inertiajs/vue3';
 import { defineProps } from 'vue';
-const props = defineProps({ event: Object });
+import type { Event } from '@/types/Event';
+defineProps<{ event: Event }>();
 </script>

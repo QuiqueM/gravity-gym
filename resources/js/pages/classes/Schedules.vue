@@ -9,10 +9,11 @@ import { toast } from 'vue-sonner'
 import { useRole } from '@/composables/useRole';
 import DialogConfirm from '@/components/DialogConfirm/DialogConfirm.vue';
 import { ref } from 'vue';
+import type { ScheduleWithBranch } from '@/types/Schedule';
 
 const props = defineProps<{
   classSelected: { id: number; title: string; type?: { name: string } };
-  schedules: { id: number; starts_at: string; ends_at: string; room?: string }[];
+  schedules: ScheduleWithBranch[];
   auth: Auth
 }>();
 
@@ -86,7 +87,7 @@ const attend = () => {
         <div v-for="s in schedules" :key="s.id" class="p-3 flex justify-between items-center">
           <div class="flex flex-col">
             <span class="font-medium">{{ formatDateTime(s.starts_at) }} → {{ formatDateTime(s.ends_at) }}</span>
-            <span class="text-sm text-muted-foreground">Lugar: {{ s.room || '—' }}</span>
+            <span class="text-sm text-muted-foreground">Lugar: {{ s.branch.name || '—' }}</span>
           </div>
           <div class="flex gap-2 items-center">
             <Button v-if="isAdmin" variant="destructive" size="sm" @click="selectSchedule(s, 'delete')"><Icon name="Trash" /></Button>

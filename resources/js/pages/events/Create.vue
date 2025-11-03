@@ -28,7 +28,7 @@
         </Select>
       </div>
       <div class="flex items-center justify-between">
-        <Link :href="route('admin.events.index')">
+        <Link :href="route('events.index')">
           <Button variant="secondary">Cancelar</Button>
         </Link>
         <Button type="submit" class="btn btn-primary">Guardar</Button>
@@ -82,7 +82,7 @@ function onFileChange(e: Event) {
 }
 
 function submit() {
-  form.post(route('admin.events.store'), {
+  form.post(route('events.store'), {
     preserveScroll: true,
     onSuccess: () => {
       form.reset('image', 'title', 'description', 'class_id');

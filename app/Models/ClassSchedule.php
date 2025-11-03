@@ -15,7 +15,7 @@ class ClassSchedule extends Model
         'class_id',
         'starts_at',
         'ends_at',
-        'room',
+        'branch_id',
     ];
 
     protected $casts = [
@@ -26,6 +26,11 @@ class ClassSchedule extends Model
     public function class(): BelongsTo
     {
         return $this->belongsTo(GymClass::class, 'class_id');
+    }
+
+    public function branch(): BelongsTo
+    {
+        return $this->belongsTo(Branch::class, 'branch_id');
     }
 
     public function registrations(): HasMany

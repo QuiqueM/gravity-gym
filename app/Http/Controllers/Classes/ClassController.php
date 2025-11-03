@@ -28,7 +28,7 @@ class ClassController extends Controller
     {
         return Inertia::render('classes/Schedules', [
             'classSelected' => $class->load('type', 'instructor'),
-            'schedules' => ClassSchedule::where('class_id', $class->id)
+            'schedules' => ClassSchedule::with('branch')->where('class_id', $class->id)
                 ->where('starts_at', '>=', now())
                 ->orderBy('starts_at')
                 ->get(),

@@ -104,11 +104,12 @@ watch(
             <div class="min-w-20 w-20 h-20 bg-gray-200 rounded-lg overflow-hidden flex items-center justify-center">
               <img :src="promotion.image" :alt="promotion.name" class="object-cover w-full h-full" v-if="promotion.image" />
             </div>
-            <div class="font-medium">
-              {{ promotion.name }} 
-              <span class="text-xs text-muted-foreground"> ( {{ promotion.description ?? 'Sin descripción' }} ) </span>
+            <div class="flex flex-col">
+              <div class="font-medium">
+                {{ promotion.name }} 
+              </div>
+              <div class="text-sm text-muted-foreground">Estado: {{ promotion.is_active ? 'Activa' : 'Inactiva' }}</div>
             </div>
-            <div class="text-sm text-muted-foreground">Estado: {{ promotion.is_active ? 'Activa' : 'Inactiva' }}</div>
           </div>
           <div class="flex gap-2">
             <Link :href="route('admin.promotions.edit', promotion.id)">

@@ -156,5 +156,13 @@ class User extends Authenticatable implements MustVerifyEmail
     public function classRegistrations()
     {
         return $this->hasMany(ClassRegistration::class);
-    }   
+    }
+
+    /**
+     * Obtener las clases que imparte el usuario (como instructor).
+     */
+    public function instructedClasses()
+    {
+        return $this->hasMany(GymClass::class, 'instructor_id');
+    }
 }
