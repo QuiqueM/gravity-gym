@@ -1,20 +1,20 @@
 <script setup lang="ts">
-import { computed } from 'vue';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { type BreadcrumbItem } from '@/types';
 import { Head } from '@inertiajs/vue3';
-import PlaceholderPattern from '../components/PlaceholderPattern.vue';
-import type { Auth } from '@/types';
+import type { Auth, AdminProps } from '@/types';
 import { useRole } from '@/composables/useRole';
 import DashboardAdmin from './Dashboard/DashboardAdmin.vue';
 import DashboardMember from './Dashboard/DashboardMember.vue';
+import DashboardCoach from './Dashboard/DashboardCoach.vue';
 
 const props = defineProps<{
   auth: Auth;
   nextClass: any | null;
+  stats: AdminProps | null
 }>();
 
-const { isAdmin, isMember } = useRole(props.auth.user.roles);
+const { isAdmin, isMember, isCoach } = useRole(props.auth.user.roles);
 
 const breadcrumbs: BreadcrumbItem[] = [
   {
@@ -37,11 +37,8 @@ const breadcrumbs: BreadcrumbItem[] = [
         </p>
       </section>
       <DashboardMember v-if="isMember" :next-class="nextClass" />
-      <DashboardAdmin v-else-if="isAdmin" />
-      <div
-        class="relative min-h-[100vh] flex-1 rounded-xl border border-sidebar-border/70 md:min-h-min dark:border-sidebar-border">
-        <PlaceholderPattern />
-      </div>
+      <DashboardAdmin v-else-if="isAdmin" :stats="stats!" />
+      <DashboardCoach v-else-if="isCoach" :next-class="nextClass" />
     </div>
   </AppLayout>
 </template>

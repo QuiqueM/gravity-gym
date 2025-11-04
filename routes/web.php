@@ -11,6 +11,8 @@ use App\Http\Controllers\Payments\MercadoPagoController;
 use App\Http\Controllers\Welcome\WelcomeController;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Response;
+use App\Http\Controllers\Admin\ExerciseController;
+use App\Http\Controllers\Admin\CategoryController;
 
 Route::get('/sw.js', function () {
     // Obtenemos el archivo compilado por Vite desde la carpeta public
@@ -59,6 +61,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/payments/mercadopago/success', [MercadoPagoController::class, 'success'])->name('payments.mercadopago.success');
     Route::get('/payments/mercadopago/failure', [MercadoPagoController::class, 'failure'])->name('payments.mercadopago.failure');
     Route::get('/payments/mercadopago/pending', [MercadoPagoController::class, 'pending'])->name('payments.mercadopago.pending');
+
+    //Ruta de listado de ejercicios
+    Route::get('exercises', [ExerciseController::class, 'index'])->name('exercises.index');
+    Route::get('categories', [CategoryController::class, 'index'])->name('categories.index');
 
 });
 

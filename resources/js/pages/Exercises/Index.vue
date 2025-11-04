@@ -84,14 +84,14 @@ const selectExerciseForView = (exercise: ExerciseWithCategory) => {
 watch(
     searchQuery,
     debounce((newQuery) => {
-        router.get(route('admin.exercises.index'), { search: newQuery, category_id: selectedCategory.value }, { preserveState: true, only: ['exercises'] });
+        router.get(route('exercises.index'), { search: newQuery, category_id: selectedCategory.value }, { preserveState: true, only: ['exercises'] });
     }, 500),
 );
 
 watch(
     selectedCategory,
     debounce((newCategory) => {
-        router.get(route('admin.exercises.index'), { search: searchQuery.value, category_id: newCategory }, { preserveState: true, only: ['exercises'] });
+        router.get(route('exercises.index'), { search: searchQuery.value, category_id: newCategory }, { preserveState: true, only: ['exercises'] });
     }, 500),
 );
 </script>
@@ -104,7 +104,7 @@ watch(
             <div class="flex items-center justify-between">
                 <h1 class="text-xl font-semibold">Ejercicios</h1>
                 <div v-if="isAdmin" class="flex items-center gap-4">
-                    <Link  :href="route('admin.categories.index')">
+                    <Link  :href="route('categories.index')">
                     <Button size="sm">Categorías</Button>
                     </Link>
                     <Link :href="route('admin.exercises.create')">

@@ -89,3 +89,10 @@ export interface Branch {
     created_at: string;
     updated_at: string;
 }
+
+export interface AdminProps {
+    total_members: number;
+    current_month_members: number;
+    active_memberships: number;
+    expiring_soon_memberships: number;
+}

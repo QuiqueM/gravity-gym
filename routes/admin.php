@@ -60,8 +60,7 @@ Route::middleware(['auth',EnsureUserIsAdmin::class])->group(function () {
         'destroy' => 'admin.promotions.destroy',
     ]);
 
-    Route::resource('categories', CategoryController::class)->names([
-        'index' => 'admin.categories.index',
+    Route::resource('categories', CategoryController::class)->except('index')->names([
         'create' => 'admin.categories.create',
         'store' => 'admin.categories.store',
         'edit' => 'admin.categories.edit',
@@ -69,8 +68,7 @@ Route::middleware(['auth',EnsureUserIsAdmin::class])->group(function () {
         'destroy' => 'admin.categories.destroy',
     ]);
 
-    Route::resource('exercises', ExerciseController::class)->names([
-        'index' => 'admin.exercises.index',
+    Route::resource('exercises', ExerciseController::class)->except('index')->names([
         'create' => 'admin.exercises.create',
         'store' => 'admin.exercises.store',
         'edit' => 'admin.exercises.edit',
