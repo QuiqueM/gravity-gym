@@ -3,6 +3,7 @@ import CardAdmin from '@/components/CardAdmin/CardAdmin.vue';
 import { Users, IdCard } from 'lucide-vue-next';
 import type { AdminProps } from '@/types';
 import { Button } from '@/components/ui/button';
+import { Link } from '@inertiajs/vue3';
 
 defineProps<{
   stats: AdminProps;
@@ -19,7 +20,9 @@ defineProps<{
         </template>
         <template #footer>
           <div class="w-full flex">
-            <Button variant="default" class="w-full">Ver todos</Button>
+            <Link :href="route('admin.users.index')" class="w-full">
+              <Button variant="default" class="w-full">Ver todos</Button>
+            </Link>
           </div>
         </template>
       </CardAdmin>
@@ -32,7 +35,9 @@ defineProps<{
         </template>
         <template #footer>
           <div class="w-full flex">
-            <Button variant="default" class="w-full">Ver todas</Button>
+            <Link :href="route('memberships.index')" class="w-full">
+              <Button variant="default" class="w-full">Ver todas</Button>
+            </Link>
           </div>
         </template>
       </CardAdmin>

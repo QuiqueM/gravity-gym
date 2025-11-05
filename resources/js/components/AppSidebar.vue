@@ -50,7 +50,7 @@ const mainNavItems: NavItem[] = [
         isVisible: isAdmin.value || isCoach.value,
     },
     {
-        title: 'Pagos (OpenPay)',
+        title: 'Pagos',
         href: '/payments/openpay',
         icon: CreditCard,
         isVisible: isAdmin.value,
@@ -95,7 +95,7 @@ const mainNavItems: NavItem[] = [
             <SidebarMenu>
                 <SidebarMenuItem>
                     <SidebarMenuButton size="lg" as-child>
-                        <Link :href="route('dashboard')">
+                        <Link :href="route('home')">
                             <AppLogo />
                         </Link>
                     </SidebarMenuButton>
