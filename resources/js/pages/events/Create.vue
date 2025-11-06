@@ -1,5 +1,5 @@
 <template>
-  <Head title="Membresías" />
+  <Head title="Crear Evento" />
   <AppLayout :breadcrumbs="breadcrumbs">
   <div class="p-4 space-y-6">
     <h1 class="text-2xl font-bold mb-4">Crear evento</h1>

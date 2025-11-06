@@ -12,7 +12,7 @@ import { Textarea } from '@/components/ui/textarea';
 
 const breadcrumbs: BreadcrumbItem[] = [
     { title: 'Dashboard', href: '/dashboard' },
-    { title: 'Categorías', href: '/admin/categories' },
+    { title: 'Categorías', href: '/categories' },
     { title: 'Crear', href: '#' },
 ];
 
@@ -58,7 +58,7 @@ const submit = () => {
                     </div>
 
                     <div class="flex flex-col md:flex-row md:justify-between items-center gap-3">
-                        <Link :href="route('admin.categories.index')" class="w-full md:w-48">
+                        <Link :href="route('categories.index')" class="w-full md:w-48">
                         <Button variant="outline" class="w-full md:w-48">Cancelar</Button>
                         </Link>
                         <Button type="submit" class="w-full md:w-48" :disabled="form.processing">

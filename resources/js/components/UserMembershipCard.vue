@@ -28,7 +28,7 @@ const onAssignMembership = () => {
       </div>
       <div class="flex justify-between">
         <span>Estado:</span>
-        <span class="text-muted-foreground">{{ membership.status }}</span>
+        <span class="text-muted-foreground">{{ membership.is_active ? 'Activa' : 'Inactiva' }}</span>
       </div>
       <div class="flex justify-between">
         <span>Vigencia:</span>

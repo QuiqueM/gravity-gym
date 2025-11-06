@@ -72,7 +72,7 @@ const onChangePage = (pageUrl: string | null) => {
 };
 
 const onClickNumberPage = (page: number) => {
-    const pageUrl = route('admin.exercises.index', { page, search: searchQuery.value, category_id: selectedCategory.value });
+    const pageUrl = route('exercises.index', { page, search: searchQuery.value, category_id: selectedCategory.value });
     onChangePage(pageUrl);
 };
 

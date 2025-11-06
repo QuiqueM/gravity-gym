@@ -1,37 +1,61 @@
 <template>
-  <div>
-    <h1 class="text-2xl font-bold mb-4">Editar evento</h1>
-    <form @submit.prevent="submit">
-      <div class="mb-4">
-        <label class="block mb-1">Título</label>
-        <input v-model="form.title" type="text" class="input input-bordered w-full" required />
-      </div>
-      <div class="mb-4">
-        <label class="block mb-1">Descripción</label>
-        <textarea v-model="form.description" class="input input-bordered w-full" required></textarea>
-      </div>
-      <div class="mb-4">
-        <label class="block mb-1">Imagen</label>
-        <input type="file" @change="onFileChange" class="input input-bordered w-full" />
-        <img v-if="event.image" :src="`/storage/${event.image}`" alt="Imagen actual" class="h-16 w-16 object-cover rounded mt-2" />
-      </div>
-      <div class="mb-4">
-        <label class="block mb-1">Clase</label>
-        <select v-model="form.class_id" class="input input-bordered w-full" required>
-          <option value="" disabled>Selecciona una clase</option>
-          <option v-for="c in classes" :key="c.id" :value="c.id">{{ c.title }}</option>
-        </select>
-      </div>
-      <button type="submit" class="btn btn-primary">Actualizar</button>
-      <Link :href="route('events.index')" class="btn btn-secondary ml-2">Cancelar</Link>
-    </form>
-  </div>
+    <Head title="Editar Evento" />
+    <AppLayout :breadcrumbs="breadcrumbs">
+        <div class="space-y-6 p-4">
+            <h1 class="mb-4 text-2xl font-bold">Editar evento</h1>
+            <form @submit.prevent="submit" class="mx-auto mt-8 flex w-full flex-col gap-6">
+                <div class="flex flex-col gap-2">
+                    <Label class="">Título</Label>
+                    <Input v-model="form.title" type="text" class="input input-bordered w-full" required />
+                </div>
+                <div class="flex flex-col gap-2">
+                    <Label class="">Descripción</Label>
+                    <Textarea v-model="form.description" class="input input-bordered w-full" required></Textarea>
+                </div>
+                <div class="flex flex-col gap-2">
+                    <Label class="">Imagen</Label>
+                    <Input type="file" @change="onFileChange" class="input input-bordered w-full" />
+                </div>
+                <div class="flex flex-col gap-2">
+                    <Label class="">Clase</Label>
+                    <Select id="class" v-model="form.class_id">
+                        <SelectTrigger class="w-full">
+                            <SelectValue placeholder="Selecciona una clase" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectItem v-for="c in classes" :key="c.id" :value="c.id">{{ c.title }}</SelectItem>
+                        </SelectContent>
+                    </Select>
+                </div>
+                <div class="flex items-center justify-between">
+                    <Link :href="route('events.index')">
+                        <Button variant="secondary">Cancelar</Button>
+                    </Link>
+                    <Button type="submit" class="btn btn-primary">Guardar</Button>
+                </div>
+            </form>
+        </div>
+    </AppLayout>
 </template>
 
 <script lang="ts" setup>
 import { Link, useForm } from '@inertiajs/vue3';
 import { defineProps } from 'vue';
 import type { Classes } from '@/types/Class';
+import AppLayout from '@/layouts/AppLayout.vue';
+import { Label } from '@/components/ui/label';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
+import { Button } from "@/components/ui/button"
+import type { BreadcrumbItem } from '@/types';
+import { toast } from 'vue-sonner';
 
 const props = defineProps<{
   event: {
@@ -43,7 +67,13 @@ const props = defineProps<{
   };
   classes: Classes[];
 }>();
+
+const breadcrumbs: BreadcrumbItem[] = [
+  { title: 'Eventos', href: '/events' },
+  { title: 'Editar evento', href: '#' },
+];
 const form = useForm({
+  _method: 'put',
   title: props.event.title,
   description: props.event.description,
   image: null as File | null,
@@ -60,8 +90,12 @@ function onFileChange(e: Event) {
 function submit() {
   form.post(route('events.update', props.event.id), {
     preserveScroll: true,
-    onSuccess: () => form.reset('image'),
-    method: 'put'
+    onSuccess: () => {
+      toast.success('Ejercicio actualizado exitosamente');
+    },
+    onError: () => {
+      toast.error('Ocurrió un error al actualizar el ejercicio');
+    },
   });
 }
 </script>

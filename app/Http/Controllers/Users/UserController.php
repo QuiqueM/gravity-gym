@@ -9,6 +9,7 @@ use App\Models\MembershipPlan;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rules;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
 
 class UserController extends Controller
 {
@@ -58,6 +59,21 @@ class UserController extends Controller
         ]);
 
         $user->roles()->sync([$request->role_id]);
+
+        //generar el QR si su rol es Member
+        if ($user->roles->contains('name', 'Member')) {
+            // Generar el QR con id y email y almacenarlo en S3
+            $qrData = json_encode(['id' => $user->id, 'email' => $user->email]);
+            $localPath = sys_get_temp_dir() . '/user_' . $user->id . '.png';
+            \SimpleSoftwareIO\QrCode\Facades\QrCode::format('png')->size(300)->generate($qrData, $localPath);
+            $s3Path = 'qrCodes/user_' . $user->id . '.png';
+            $fileStream = fopen($localPath, 'r');
+            Storage::disk('s3')->put($s3Path, $fileStream);
+            fclose($fileStream);
+            unlink($localPath);
+            $user->qr_code = $s3Path;
+            $user->save();
+        }
 
         return to_route('admin.users.index')->with('success', 'Usuario creado');
     }

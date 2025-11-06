@@ -10,7 +10,7 @@
         </Link>
       </div>
       <div class="rounded-xl border divide-y">
-        <div v-for="event in events" :key="event.id" class="flex flex-col gap-2 md:flex-row md:justify-between p-3">
+        <div v-for="event in events" :key="event.id" class="flex gap-2 flex-row justify-between p-3">
           <div class="flex gap-4">
             <div class="min-w-20 w-20 h-20 bg-gray-200 rounded-lg overflow-hidden flex items-center justify-center">
               <img :src="event.image" :alt="event.title" class="object-cover w-full h-full" v-if="event.image" />
@@ -23,17 +23,13 @@
             </div>
           </div>
           <div class="flex items-center justify-center gap-x-2">
-            <Button variant="destructive" @click="selectEventForDeletion(event)">
-              <Icon name="trash" class="w-4 h-4" />
-              <span class="flex md:hidden">Eliminar</span>
-            </Button>
-            <Button variant="secondary" @click="selectEventForDeletion(event)">
-              <Icon name="edit" class="w-4 h-4" />
-              <span class="flex md:hidden">Editar</span>
-            </Button>
-            <Button variant="secondary" @click="selectEventForDeletion(event)">
-              <Icon name="eye" class="w-4 h-4" />
-              <span class="flex md:hidden">Ver</span>
+            <Link :href="route('events.edit', event.id)">
+              <Button variant="secondary">
+                <Icon name="edit" class="w-4 h-4" />
+              </Button>
+            </Link>
+            <Button variant="destructive">
+              <Icon name="trash" class="w-4 h-4" @click="selectEventForDeletion(event)" />
             </Button>
           </div>
         </div>

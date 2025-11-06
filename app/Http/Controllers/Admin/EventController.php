@@ -57,7 +57,9 @@ class EventController extends Controller
 
     public function edit(Event $event)
     {
-        $classes = GymClass::all();
+        $classes = GymClass::whereHas('type', function ($query) {
+            $query->where('name', 'Evento');
+        })->get();
 
         return inertia('events/Edit', compact('event', 'classes'));
     }
@@ -79,6 +81,8 @@ class EventController extends Controller
             $extension = $request->file('image')->getClientOriginalExtension();
             $filename = $uuid.'.'.$extension;
             $data['image'] = $request->file('image')->storeAs('events', $filename, 's3');
+        } else {
+            $data['image'] = $event->image;
         }
 
         $event->update($data);

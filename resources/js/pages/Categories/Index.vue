@@ -34,7 +34,7 @@ const searchQuery = ref<string>(props.filters.search || '');
 
 const breadcrumbs = [
     { title: 'Dashboard', href: '/dashboard' },
-    { title: 'Categorías', href: '/admin/categories' },
+    { title: 'Categorías', href: '/categories' },
 ];
 
 const destroy = () => {
@@ -63,7 +63,7 @@ const onChangePage = (pageUrl: string | null) => {
 };
 
 const onClickNumberPage = (page: number) => {
-    const pageUrl = route('admin.categories.index', { page });
+    const pageUrl = route('categories.index', { page });
     onChangePage(pageUrl);
 };
 
@@ -71,9 +71,9 @@ watch(
     searchQuery,
     debounce((newQuery) => {
         if (newQuery && newQuery.trim() !== '') {
-            router.get(route('admin.categories.index'), { search: newQuery }, { preserveState: true, only: ['categories'] });
+            router.get(route('categories.index'), { search: newQuery }, { preserveState: true, only: ['categories'] });
         } else {
-            router.get(route('admin.categories.index'), {}, { preserveState: true, only: ['categories'] });
+            router.get(route('categories.index'), {}, { preserveState: true, only: ['categories'] });
         }
     }, 500),
 );
