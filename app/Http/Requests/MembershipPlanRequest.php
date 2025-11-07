@@ -24,9 +24,9 @@ class MembershipPlanRequest extends FormRequest
         return [
             'name' => ['required', 'string', 'max:255'],
             'description' => ['nullable', 'string'],
-            'price' => ['required', 'numeric', 'min:50'],
+            'price' => ['required', 'numeric', 'min:1'],
             'duration_days' => ['required', 'integer', 'min:1'],
-            'class_limit_per_week' => ['required', 'integer', 'min:1'],
+            'class_limit' => ['required', 'integer', 'min:1'],
             'is_active' => ['required', 'boolean'],
             'features' => ['nullable', 'array'],
         ];
