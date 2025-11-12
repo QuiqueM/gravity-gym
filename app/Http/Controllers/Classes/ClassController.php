@@ -58,7 +58,7 @@ class ClassController extends Controller
     public function createClass(): Response
     {
         $coaches = User::whereHas('roles', function($q) {
-            $q->where('name', 'Coach');
+            $q->where('name', 'Coach')->orWhere('name', 'Admin');
         })->get();
         return Inertia::render('classes/CreateClass', [
             'types' => ClassType::all(),
@@ -198,5 +198,38 @@ class ClassController extends Controller
             $membership->decrement('remaining_classes');
         }
         return back()->with('success', 'Asistencia confirmada exitosamente.');
+    }
+
+    public function editClass(GymClass $class): Response
+    {
+        $coaches = User::whereHas('roles', function($q) {
+            $q->where('name', 'Coach')->orWhere('name', 'Admin');
+        })->get();
+        return Inertia::render('classes/EditClass', [
+            'classSelected' => $class->load('type', 'instructor'),
+            'types' => ClassType::all(),
+            'coaches' => $coaches,
+        ]);
+    }
+
+    public function updateClass(Request $request, GymClass $class)
+    {
+        $request->validate([
+            'title' => 'required|string|max:255',
+            'class_type_id' => 'required|exists:class_types,id',
+            'instructor_id' => 'required|exists:users,id',
+            'capacity' => 'required|integer|min:1',
+            'requires_membership' => 'required|boolean',
+        ]);
+
+        $class->update([
+            'title' => $request->title,
+            'class_type_id' => $request->class_type_id,
+            'instructor_id' => $request->instructor_id,
+            'capacity' => $request->capacity,
+            'requires_membership' => $request->requires_membership,
+        ]);
+
+        return to_route('classes.index')->with('success', 'Clase actualizada exitosamente.');
     }
 }

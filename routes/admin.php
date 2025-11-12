@@ -38,6 +38,8 @@ Route::middleware(['auth',EnsureUserIsAdmin::class])->group(function () {
     Route::get('classes/type/create', [ClassController::class, 'createType'])->name('classes.type.create');
     Route::post('classes/type', [ClassController::class, 'storeType'])->name('classes.type.store');
     Route::get('classes/create', [ClassController::class, 'createClass'])->name('classes.create');
+    Route::get('classes/{class}/edit', [ClassController::class, 'editClass'])->name('classes.edit');
+    Route::put('classes/{class}', [ClassController::class, 'updateClass'])->name('classes.update');
     Route::post('classes', [ClassController::class, 'storeClass'])->name('classes.store');
     Route::get('classes/{class}/schedules/create', [ClassController::class, 'createSchedule'])->name('classes.schedules.create');
     Route::post('classes/{class}/schedules', [ClassController::class, 'storeSchedule'])->name('classes.schedules.store');

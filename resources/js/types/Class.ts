@@ -11,6 +11,10 @@ export interface CreateClassProps {
   coaches: Coach[];
 }
 
+export interface EditClassProps extends CreateClassProps {
+  classSelected: Classes;
+}
+
 export interface Classes {
   capacity: number;
   class_type_id: number;

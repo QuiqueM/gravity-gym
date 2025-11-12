@@ -1,12 +1,15 @@
 <script setup lang="ts">
+import { ref } from 'vue';
 import { Head, Link } from '@inertiajs/vue3';
 import NavBar from '@/components/navbar/NavBar.vue';
 import MembershipCard from '@/components/MembershipCard/MembershipCard.vue';
 import CommentUser from '@/components/CommentUser/CommentUser.vue';
+import ShowMedia from '@/components/ShowMedia/ShowMedia.vue';
 import type { User, Promotion, Branch } from '@/types';
 import type { CommentWithUser } from '@/types/Comments';
 import { Plan } from '@/types/membership';
 import type { Event } from '@/types/Event';
+import { Button } from '@/components/ui/button';
 
 defineProps<{
   auth: {
@@ -18,6 +21,21 @@ defineProps<{
   promotions: Promotion[];
   branches: Branch[];
 }>();
+
+const eventSelected = ref<Event | null>(null);
+const promotionSelected = ref<Promotion | null>(null);
+const showEvent = ref(false);
+const showPromotions = ref(false);
+
+const onEventSelect = (event: Event) => {
+  eventSelected.value = event;
+  showEvent.value = true;
+};
+
+const onPromotionSelect = (promotion: Promotion) => {
+  promotionSelected.value = promotion;
+  showPromotions.value = true;
+};
 </script>
 
 <template>
@@ -58,7 +76,7 @@ defineProps<{
             <h2 v-if="promotions.length" class="text-white text-[22px] font-bold leading-tight tracking-[-0.015em] px-4 pb-3 pt-5">Promociones</h2>
             <div class="flex overflow-y-auto [-ms-scrollbar-style:none] [scrollbar-width:none] [&amp;::-webkit-scrollbar]:hidden">
               <div class="flex items-stretch p-4 gap-3">
-                <div v-for="promotion in promotions" :key="promotion.id" class="flex h-full flex-1 flex-col gap-4 rounded-lg min-w-60">
+                <div v-for="promotion in promotions" :key="promotion.id" class="flex h-full flex-1 flex-col gap-4 rounded-lg min-w-60" @click="onPromotionSelect(promotion)">
                   <div
                     class="w-full bg-center bg-no-repeat aspect-video bg-cover rounded-xl flex flex-col"
                     :style="`background-image: url(${promotion.image});`"
@@ -73,14 +91,13 @@ defineProps<{
             <h2 v-if="events.length" class="text-white text-[22px] font-bold leading-tight tracking-[-0.015em] px-4 pb-3 pt-5">Proximos Eventos</h2>
             <div class="flex overflow-y-auto [-ms-scrollbar-style:none] [scrollbar-width:none] [&amp;::-webkit-scrollbar]:hidden">
               <div class="flex items-stretch p-4 gap-3">
-                <div v-for="event in events" :key="event.id" class="flex h-full flex-1 flex-col gap-4 rounded-lg min-w-60">
-                  <div
-                    class="w-full bg-center bg-no-repeat aspect-video bg-cover rounded-xl flex flex-col"
-                    :style="`background-image: url(${event.image});`"
-                  ></div>
+                <div v-for="event in events" :key="event.id" class="flex h-full flex-1 flex-col gap-4 rounded-lg max-w-60" @click="onEventSelect(event)">
+                  <div class="w-full bg-center bg-cover rounded-xl flex flex-col">
+                    <img :src="event.image" :alt="event.title" class="rounded-xl"/>
+                  </div>
                   <div>
                     <p class="text-white text-base font-medium leading-normal">{{ event.title }}</p>
-                    <p class="text-[#b9a89d] text-sm font-normal leading-normal">{{ event.description }}</p>
+                    <p class="text-[#b9a89d] text-sm font-normal leading-normal line-clamp-2">{{ event.description }}</p>
                   </div>
                 </div>
               </div>
@@ -132,6 +149,23 @@ defineProps<{
             </footer>
           </div>
         </footer>
+
+        <ShowMedia
+          v-if="eventSelected"
+          v-model:open="showEvent"
+          :title="eventSelected.title"
+          :imgUrl="eventSelected.image!"
+          :description="eventSelected.description"
+        >
+          <template #footer>
+            <Link v-if="!auth.user" @click="route('login')">
+              <Button class="w-full">Inicia sesión</Button>
+            </Link>
+            <Link v-else :href="route('classes.schedules', eventSelected.class_id)">
+              <Button class="w-full">Registrate</Button>
+            </Link>
+          </template>
+        </ShowMedia>
       </div>
     </div>
 </template>

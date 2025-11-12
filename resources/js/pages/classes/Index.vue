@@ -63,6 +63,9 @@ const breadcrumbs: BreadcrumbItem[] = [
               <div class="text-sm text-muted-foreground">{{ item.type?.name }}</div>
             </div>
             <div class="flex flex-row justify-stretch gap-2">
+              <Link v-if="permissions.canAssignSchedules" :href="route('classes.edit', item.id)"
+                class="text-primary">Editar</Link>
+              <span class="text-gray-500">|</span>
               <Link v-if="permissions.canAssignSchedules" :href="`/classes/${item.id}/schedules/create`"
                 class="text-primary">Asignar horarios</Link>
               <span class="text-gray-500">|</span>
