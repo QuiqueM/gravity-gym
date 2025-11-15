@@ -12,9 +12,12 @@ class WelcomeController extends Controller
 {
     public function index()
     {
-        $events = Event::all();
+        $events = Event::whereHas('gymClass.schedules', function ($query) {
+            $query->where('starts_at', '>', now());
+        })->get();
+        
         $plans = MembershipPlan::all();
-        $comments = Review::with('user')->latest()->get();
+        $comments = Review::with('user')->get();
         $promotions = Promotion::where('is_active', true)->get();
         $branches = Branch::where('is_active', true)->get();
 

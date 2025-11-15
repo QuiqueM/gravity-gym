@@ -25,7 +25,7 @@ const props = defineProps<{
 
 const breadcrumbs: BreadcrumbItem[] = [
     { title: 'Dashboard', href: '/dashboard' },
-    { title: 'Ejercicios', href: '/admin/exercises' },
+    { title: 'Ejercicios', href: '/exercises' },
     { title: 'Editar', href: '#' },
 ];
 
@@ -76,7 +76,7 @@ const submit = () => {
                         <Label for="demonstration_video">Video Demostrativo</Label>
                         <Input id="demonstration_video" type="file" @input="form.demonstration_video = $event.target.files[0]" />
                         <InputError :message="form.errors.demonstration_video" />
-                        <video v-if="props.exercise.demonstration_video" :src="`/storage/${props.exercise.demonstration_video}`" controls class="mt-2 h-48 w-full object-cover"></video>
+                        <video v-if="props.exercise.demonstration_video" :src="props.exercise.demonstration_video" controls class="mt-2 h-48 w-full object-cover"></video>
                     </div>
 
                     <div class="flex flex-col gap-2">
@@ -95,7 +95,7 @@ const submit = () => {
                     </div>
 
                     <div class="flex flex-col md:flex-row md:justify-between items-center gap-3">
-                        <Link :href="route('admin.exercises.index')" class="w-full md:w-48">
+                        <Link :href="route('exercises.index')" class="w-full md:w-48">
                         <Button variant="outline" class="w-full md:w-48">Cancelar</Button>
                         </Link>
                         <Button type="submit" class="w-full md:w-48" :disabled="form.processing">

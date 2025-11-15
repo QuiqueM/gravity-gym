@@ -66,7 +66,7 @@ const submit = () => {
                     </div>
 
                     <div class="flex items-center space-x-2">
-                        <Checkbox id="is_active" v-model:checked="form.is_active" />
+                        <Checkbox id="is_active" v-model="form.is_active" />
                         <Label for="is_active">Activa</Label>
                         <InputError :message="form.errors.is_active" />
                     </div>

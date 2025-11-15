@@ -57,7 +57,6 @@ const userIsAdmin = computed(() => {
  return rol ? true : false;
 })
 const onAssignMembership = () => {
-  console.log('Asignar membresía');
   showSheet.value = true;
 }
 

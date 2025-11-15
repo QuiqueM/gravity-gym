@@ -1,17 +1,18 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 import { Head, Link } from '@inertiajs/vue3';
 import NavBar from '@/components/navbar/NavBar.vue';
 import MembershipCard from '@/components/MembershipCard/MembershipCard.vue';
 import CommentUser from '@/components/CommentUser/CommentUser.vue';
 import ShowMedia from '@/components/ShowMedia/ShowMedia.vue';
+import ModalComments from '@/components/ModalComments/ModalComments.vue';
 import type { User, Promotion, Branch } from '@/types';
 import type { CommentWithUser } from '@/types/Comments';
 import { Plan } from '@/types/membership';
 import type { Event } from '@/types/Event';
 import { Button } from '@/components/ui/button';
 
-defineProps<{
+const props = defineProps<{
   auth: {
     user: User | null;
   };
@@ -26,6 +27,7 @@ const eventSelected = ref<Event | null>(null);
 const promotionSelected = ref<Promotion | null>(null);
 const showEvent = ref(false);
 const showPromotions = ref(false);
+const showModalComments = ref(false);
 
 const onEventSelect = (event: Event) => {
   eventSelected.value = event;
@@ -35,6 +37,15 @@ const onEventSelect = (event: Event) => {
 const onPromotionSelect = (promotion: Promotion) => {
   promotionSelected.value = promotion;
   showPromotions.value = true;
+};
+
+
+const visibleComments = computed(() => {
+  return props.comments.slice(0, 5);
+});
+
+const showComments = () => {
+  showModalComments.value = true;
 };
 </script>
 
@@ -120,7 +131,16 @@ const onPromotionSelect = (promotion: Promotion) => {
 
             <h2 v-if="comments.length" class="text-white text-[22px] font-bold leading-tight tracking-[-0.015em] px-4 pb-3 pt-5">Reseñas de los clientes</h2>
             <div class="flex flex-col gap-8 overflow-x-hidden p-4">
-              <CommentUser v-for="(comment, index) in comments" :key="index" :comment="comment" />
+              <CommentUser v-for="(comment, index) in visibleComments" :key="index" :comment="comment" />
+              <div v-if="true" class="flex justify-center">
+                <Button 
+                  variant="outline"
+                  class="text-white border-white hover:bg-white hover:text-black"
+                  @click="showComments"
+                >
+                  Ver Todos
+                </Button>
+              </div>
             </div>
             <h2 class="text-white text-[22px] font-bold leading-tight tracking-[-0.015em] px-4 pb-3 pt-5">Opciones de Membresía</h2>
             <div class="grid grid-cols-[repeat(auto-fit,minmax(228px,1fr))] gap-2.5 px-4 py-3 @3xl:grid-cols-4">
@@ -166,6 +186,7 @@ const onPromotionSelect = (promotion: Promotion) => {
             </Link>
           </template>
         </ShowMedia>
+        <ModalComments v-model="showModalComments" :comments="comments" />
       </div>
     </div>
 </template>
