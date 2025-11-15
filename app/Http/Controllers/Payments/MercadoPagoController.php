@@ -63,7 +63,8 @@ class MercadoPagoController extends \App\Http\Controllers\Controller
             ]);
 
             return response()->json([
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
+                'mp_api_response' => method_exists($e, 'getApiResponse') && $e->getApiResponse() ? $e->getApiResponse()->getContent() : 'No API response content available',
             ], 500);
         }
     }
