@@ -20,7 +20,7 @@ class ClassController extends Controller
     {
         return Inertia::render('classes/Index', [
             'types' => ClassType::all(),
-            'classes' => GymClass::with(['type', 'instructor'])->paginate(15),
+            'classes' => GymClass::with(['type', 'instructor'])->orderBy('id')->paginate(15),
         ]);
     }
 
