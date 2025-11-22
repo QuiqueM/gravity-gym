@@ -98,29 +98,19 @@ class MercadoPagoController extends \App\Http\Controllers\Controller
                         $membershipPlan = MembershipPlan::find($membershipPlanId);
 
                         if ($user && $membershipPlan) {
-                            // Verificar si ya tiene una membresía activa de este plan o si es una renovación
-                            $existingMembership = $user->memberships()->where('membership_plan_id', $membershipPlan->id)->first();
+                            // Desactivar cualquier membresía activa existente del usuario
+                            $user->memberships()->where('is_active', true)->update(['is_active' => false]);
+                            Log::info('Existing active memberships deactivated for user', ['user_id' => $userId]);
 
-                            if ($existingMembership) {
-                                // Renovar membresía
-                                $existingMembership->update([
-                                    'start_date' => now(),
-                                    'end_date' => now()->addDays($membershipPlan->duration_days),
-                                    'is_active' => true,
-                                    'remaining_classes' => ($membershipPlan->class_limit + $existingMembership->remaining_classes),
-                                ]);
-                                Log::info('Membership renewed for user', ['user_id' => $userId, 'plan_id' => $membershipPlanId]);
-                            } else {
-                                // Crear nueva membresía
-                                $user->memberships()->create([
-                                    'membership_plan_id' => $membershipPlan->id,
-                                    'start_date' => now(),
-                                    'end_date' => now()->addDays($membershipPlan->duration_days),
-                                    'is_active' => true,
-                                    'remaining_classes' => $membershipPlan->class_limit,
-                                ]);
-                                Log::info('New membership created for user', ['user_id' => $userId, 'plan_id' => $membershipPlanId]);
-                            }
+                            // Crear nueva membresía
+                            $user->memberships()->create([
+                                'membership_plan_id' => $membershipPlan->id,
+                                'start_date' => now(),
+                                'end_date' => now()->addDays($membershipPlan->duration_days),
+                                'is_active' => true,
+                                'remaining_classes' => $membershipPlan->class_limit,
+                            ]);
+                            Log::info('New membership created for user', ['user_id' => $userId, 'plan_id' => $membershipPlanId]);
 
                             // Registrar el pago en la base de datos
                             Payment::create([
