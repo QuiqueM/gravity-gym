@@ -49,12 +49,8 @@ const onFilterChange = (filter: string) => {
   router.get(route('memberships.index'), { filter }, { preserveState: true, only: ['memberships'] });
 }
 
-const labelStatus = (status: string) => {
-  const statusMap: Record<string, string> = {
-    active: 'Activo',
-    expired: 'Vencido',
-  };
-  return statusMap[status] || status;
+const labelStatus = (isActive: boolean) => {
+  return isActive ? 'Activo' : 'Vencido';
 }
 
 const colorStatus = (date: string | Date): string => {
@@ -130,7 +126,7 @@ const onClickNumberPage = (page: number) => {
               <div class="font-medium">{{ item.user.name }} • {{ item.plan.name }}</div>
               <div class="text-sm text-muted-foreground">
                 {{ formatDate(item.starts_at) }} → {{ formatDate(item.ends_at) }} • <span
-                  :class="colorStatus(item.ends_at)"> {{ labelStatus(item.status) }} </span>
+                  :class="colorStatus(item.ends_at)"> {{ labelStatus(item.is_active) }} </span>
               </div>
             </div>
             <Button variant="secondary" size="sm">Ver</Button>

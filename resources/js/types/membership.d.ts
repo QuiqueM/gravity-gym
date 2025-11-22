@@ -15,7 +15,7 @@ export interface MembershipItem {
   plan: { id: number; name: string };
   starts_at: string;
   ends_at: string;
-  status: string;
+  is_active: boolean;
 }
 
 export interface Membership {
@@ -23,6 +23,6 @@ export interface Membership {
   plan: Plan;
   starts_at: string;
   ends_at: string;
-  status: string;
+  is_active: boolean;
   remaining_classes: number;
 }
