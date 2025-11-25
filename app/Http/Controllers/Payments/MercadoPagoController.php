@@ -83,15 +83,53 @@ class MercadoPagoController extends \App\Http\Controllers\Controller
                 $client = new \MercadoPago\Client\Payment\PaymentClient();
                 $payment = $client->get($paymentId);
 
+                // DEBUG: Verificar el formato de metadata
+                Log::info('Payment metadata debug', [
+                    'metadata_raw' => $payment->metadata,
+                    'metadata_type' => gettype($payment->metadata),
+                    'metadata_json' => json_encode($payment->metadata),
+                    'payment_external_reference' => $payment->external_reference
+                ]);
+
                 if ($payment && $payment->status === 'approved') {
                     // Lógica para activar la membresía o actualizar el estado del pago
                     Log::info('Payment Approved', ['payment_id' => $paymentId]);
                     
-                    // Aquí puedes usar la metadata para encontrar el usuario y el plan
-                    $metadata = (array) $payment->metadata;
-                    $userId = $metadata['user_id'] ?? null;
-                    $membershipPlanId = $metadata['membership_plan_id'] ?? null;
-                    $paymentType = $metadata['payment_type'] ?? null;
+                    // Usar external_reference como respaldo
+                    $externalRef = $payment->external_reference; // formato: "user_id-plan_id-timestamp"
+                    $parts = explode('-', $externalRef);
+                    
+                    $userId = $parts[0] ?? null;
+                    $membershipPlanId = $parts[1] ?? null;
+                    $paymentType = 'membership';
+                    
+                    // Verificar metadata con múltiples métodos
+                    if ($payment->metadata) {
+                        if (is_object($payment->metadata)) {
+                            // Opción 2: Acceder como propiedades del objeto
+                            $userId = $payment->metadata->user_id ?? $userId;
+                            $membershipPlanId = $payment->metadata->membership_plan_id ?? $membershipPlanId;
+                            $paymentType = $payment->metadata->payment_type ?? $paymentType;
+                        } elseif (is_array($payment->metadata)) {
+                            // Si ya es array
+                            $userId = $payment->metadata['user_id'] ?? $userId;
+                            $membershipPlanId = $payment->metadata['membership_plan_id'] ?? $membershipPlanId;
+                            $paymentType = $payment->metadata['payment_type'] ?? $paymentType;
+                        } else {
+                            // Intentar convertir a array
+                            $metadata = json_decode(json_encode($payment->metadata), true);
+                            $userId = $metadata['user_id'] ?? $userId;
+                            $membershipPlanId = $metadata['membership_plan_id'] ?? $membershipPlanId;
+                            $paymentType = $metadata['payment_type'] ?? $paymentType;
+                        }
+                    }
+                    
+                    Log::info('Processing payment with extracted data', [
+                        'user_id' => $userId,
+                        'membership_plan_id' => $membershipPlanId,
+                        'payment_type' => $paymentType,
+                        'external_reference' => $externalRef
+                    ]);
 
                     if ($userId && $membershipPlanId && $paymentType === 'membership') {
                         $user = User::find($userId);
@@ -206,9 +244,27 @@ class MercadoPagoController extends \App\Http\Controllers\Controller
      */
     private function recordPayment($payment)
     {
-        $metadata = (array) $payment->metadata;
-        $userId = $metadata['user_id'] ?? null;
-        $membershipPlanId = $metadata['membership_plan_id'] ?? null;
+        // Usar external_reference como respaldo
+        $externalRef = $payment->external_reference;
+        $parts = explode('-', $externalRef);
+        
+        $userId = $parts[0] ?? null;
+        $membershipPlanId = $parts[1] ?? null;
+        
+        // Verificar metadata con múltiples métodos
+        if ($payment->metadata) {
+            if (is_object($payment->metadata)) {
+                $userId = $payment->metadata->user_id ?? $userId;
+                $membershipPlanId = $payment->metadata->membership_plan_id ?? $membershipPlanId;
+            } elseif (is_array($payment->metadata)) {
+                $userId = $payment->metadata['user_id'] ?? $userId;
+                $membershipPlanId = $payment->metadata['membership_plan_id'] ?? $membershipPlanId;
+            } else {
+                $metadata = json_decode(json_encode($payment->metadata), true);
+                $userId = $metadata['user_id'] ?? $userId;
+                $membershipPlanId = $metadata['membership_plan_id'] ?? $membershipPlanId;
+            }
+        }
 
         Payment::create([
             'user_id' => $userId,
@@ -221,7 +277,7 @@ class MercadoPagoController extends \App\Http\Controllers\Controller
             'external_reference' => $payment->external_reference,
             'external_status' => $payment->status_detail,
             'processed_at' => now(),
-            'metadata' => $metadata,
+            'metadata' => is_array($payment->metadata) ? $payment->metadata : json_decode(json_encode($payment->metadata), true),
         ]);
         Log::info('Payment recorded in database with status', ['payment_id' => $payment->id, 'status' => $payment->status]);
     }
