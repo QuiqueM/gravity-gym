@@ -41,7 +41,7 @@ class MercadoPagoController extends \App\Http\Controllers\Controller
                   "failure" => route('payments.mercadopago.failure'),
                   "pending" => route('payments.mercadopago.pending'),
               ],
-              "notification_url" => route('payments.mercadopago.webhook'),
+              //"notification_url" => route('payments.mercadopago.webhook'),
               "external_reference" => $user->id . '-' . ($plan['id'] ?? '') . '-' . time(), // Referencia única para tu sistema
               "metadata" => [
                   "user_id" => $user->id,
@@ -74,9 +74,8 @@ class MercadoPagoController extends \App\Http\Controllers\Controller
      */
     public function handleWebhook(Request $request)
     {
-        Log::info('Mercado Pago Webhook Received', $request->all());
-
         if ($request->input('type') === 'payment') {
+            Log::info('Mercado Pago Webhook Received', $request->all());
             $paymentId = $request->input('data.id');
             try {
                 MercadoPagoConfig::setAccessToken(config('services.mercadopago.token'));
@@ -85,7 +84,7 @@ class MercadoPagoController extends \App\Http\Controllers\Controller
 
                 // DEBUG: Verificar el formato de metadata
                 Log::info('Payment metadata debug', [
-                    'metadata_raw' => $payment->metadata,
+                    'payment' => $payment,
                     'metadata_type' => gettype($payment->metadata),
                     'metadata_json' => json_encode($payment->metadata),
                     'payment_external_reference' => $payment->external_reference
@@ -143,8 +142,8 @@ class MercadoPagoController extends \App\Http\Controllers\Controller
                             // Crear nueva membresía
                             $user->memberships()->create([
                                 'membership_plan_id' => $membershipPlan->id,
-                                'starts_at' => now(),
-                                'ends_at' => now()->addDays($membershipPlan->duration_days),
+                                'starts_at' => now()->utc(),
+                                'ends_at' => now()->utc()->addDays($membershipPlan->duration_days),
                                 'is_active' => true,
                                 'remaining_classes' => $membershipPlan->class_limit,
                             ]);
@@ -161,10 +160,10 @@ class MercadoPagoController extends \App\Http\Controllers\Controller
                                 'external_id' => $payment->id,
                                 'external_reference' => $payment->external_reference,
                                 'external_status' => $payment->status_detail,
-                                'processed_at' => now(),
-                                'metadata' => $metadata,
+                                'processed_at' => now()->utc(),
+                                'metadata' => is_array($payment->metadata) ? $payment->metadata : json_decode(json_encode($payment->metadata), true),
                             ]);
-                            Log::info('Payment recorded in database', ['payment_id' => $paymentId]);
+                            Log::info('Payment recorded in database', ['payment_id' => $paymentId, 'external_id' => $payment->id]);
                         } else {
                             Log::warning('User or Membership Plan not found for payment', ['payment_id' => $paymentId, 'user_id' => $userId, 'membership_plan_id' => $membershipPlanId]);
                         }
@@ -276,7 +275,7 @@ class MercadoPagoController extends \App\Http\Controllers\Controller
             'external_id' => $payment->id,
             'external_reference' => $payment->external_reference,
             'external_status' => $payment->status_detail,
-            'processed_at' => now(),
+            'processed_at' => now()->utc(),
             'metadata' => is_array($payment->metadata) ? $payment->metadata : json_decode(json_encode($payment->metadata), true),
         ]);
         Log::info('Payment recorded in database with status', ['payment_id' => $payment->id, 'status' => $payment->status]);
