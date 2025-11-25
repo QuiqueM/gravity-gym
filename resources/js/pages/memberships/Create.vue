@@ -87,7 +87,7 @@ const submit = () => {
           </div>
           <div class="grid gap-2">
             <Label for="price">Precio</Label>
-            <NumberField id="price" v-model="form.price" :min="50" :step="50" required :format-options="{
+            <NumberField id="price" v-model="form.price" :min="1" :step="1" required :format-options="{
               style: 'currency',
               currency: 'MXN',
               currencyDisplay: 'code',

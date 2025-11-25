@@ -143,8 +143,8 @@ class MercadoPagoController extends \App\Http\Controllers\Controller
                             // Crear nueva membresía
                             $user->memberships()->create([
                                 'membership_plan_id' => $membershipPlan->id,
-                                'start_date' => now(),
-                                'end_date' => now()->addDays($membershipPlan->duration_days),
+                                'starts_at' => now(),
+                                'ends_at' => now()->addDays($membershipPlan->duration_days),
                                 'is_active' => true,
                                 'remaining_classes' => $membershipPlan->class_limit,
                             ]);
