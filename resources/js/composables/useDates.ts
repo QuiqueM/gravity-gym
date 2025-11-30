@@ -39,7 +39,7 @@ export function useDates() {
   }
 
   const transformTimeZone = (dateString: string) => {
-    return dayjs(dateString).tz(currentTimezone).format();
+    return dayjs(dateString).tz(currentTimezone).format('D MMM YYYY, h:mm A');
   };
 
   const isMoreThanOneHour = (startDate: string | Date): boolean => {

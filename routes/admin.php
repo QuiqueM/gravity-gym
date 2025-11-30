@@ -10,6 +10,7 @@ use App\Http\Controllers\Admin\BranchController;
 use App\Http\Controllers\Admin\PromotionController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\ExerciseController;
+use App\Http\Controllers\Payments\PaymentController;
 
 Route::middleware(['auth',EnsureUserIsAdmin::class])->group(function () {
     Route::get('memberships-plan/create', [MembershipController::class, 'createMembershipPlan'])
@@ -77,4 +78,12 @@ Route::middleware(['auth',EnsureUserIsAdmin::class])->group(function () {
         'update' => 'admin.exercises.update',
         'destroy' => 'admin.exercises.destroy',
     ]);
+
+    Route::prefix('payments')->name('admin.payments.')->group(function () {
+        Route::get('/', [PaymentController::class, 'index'])->name('index');
+        Route::get('/{payment}', [PaymentController::class, 'show'])->name('show');
+        Route::patch('/{payment}/refund', [PaymentController::class, 'refund'])->name('refund');
+        Route::get('/export/csv', [PaymentController::class, 'export'])->name('export');
+        Route::get('/reports/monthly', [PaymentController::class, 'monthlyReport'])->name('monthly-report');
+    });
 });

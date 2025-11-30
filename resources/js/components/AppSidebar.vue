@@ -51,7 +51,7 @@ const mainNavItems: NavItem[] = [
     },
     {
         title: 'Pagos',
-        href: '/payments/openpay',
+        href: '/payments',
         icon: CreditCard,
         isVisible: isAdmin.value,
     },

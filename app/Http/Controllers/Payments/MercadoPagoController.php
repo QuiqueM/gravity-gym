@@ -11,6 +11,7 @@ use MercadoPago\MercadoPagoConfig;
 use App\Models\Payment;
 use App\Models\MembershipPlan;
 use App\Models\User;
+use App\Models\Membership;
 
 class MercadoPagoController extends \App\Http\Controllers\Controller
 {
@@ -77,7 +78,15 @@ class MercadoPagoController extends \App\Http\Controllers\Controller
         if ($request->input('type') === 'payment') {
             Log::info('Mercado Pago Webhook Received', $request->all());
             $paymentId = $request->input('data.id');
+            
             try {
+                // 🔥 PROTECCIÓN 1: Verificar si ya procesamos este pago
+                $existingPayment = Payment::where('external_id', $paymentId)->first();
+                if ($existingPayment && $existingPayment->status === 'approved') {
+                    Log::info('Payment already processed, skipping', ['payment_id' => $paymentId]);
+                    return response()->json(['status' => 'ok', 'message' => 'Payment already processed']);
+                }
+                
                 MercadoPagoConfig::setAccessToken(config('services.mercadopago.token'));
                 $client = new \MercadoPago\Client\Payment\PaymentClient();
                 $payment = $client->get($paymentId);
@@ -101,6 +110,23 @@ class MercadoPagoController extends \App\Http\Controllers\Controller
                     $userId = $parts[0] ?? null;
                     $membershipPlanId = $parts[1] ?? null;
                     $paymentType = 'membership';
+                    
+                    // 🔥 PROTECCIÓN 2: Verificar si ya existe una membresía reciente para este usuario
+                    if ($userId) {
+                        $recentMembership = Membership::where('user_id', $userId)
+                            ->where('is_active', true)
+                            ->where('created_at', '>=', now()->utc()->subMinutes(5)) // Creada en los últimos 5 minutos
+                            ->first();
+                        
+                        if ($recentMembership) {
+                            Log::info('Recent membership already exists for user, skipping', [
+                                'user_id' => $userId, 
+                                'membership_id' => $recentMembership->id,
+                                'payment_id' => $paymentId
+                            ]);
+                            return response()->json(['status' => 'ok', 'message' => 'Recent membership already exists']);
+                        }
+                    }
                     
                     // Verificar metadata con múltiples métodos
                     if ($payment->metadata) {
@@ -135,40 +161,84 @@ class MercadoPagoController extends \App\Http\Controllers\Controller
                         $membershipPlan = MembershipPlan::find($membershipPlanId);
 
                         if ($user && $membershipPlan) {
-                            // Desactivar cualquier membresía activa existente del usuario
-                            $user->memberships()->where('is_active', true)->update(['is_active' => false]);
-                            Log::info('Existing active memberships deactivated for user', ['user_id' => $userId]);
+                            // 🔥 PROTECCIÓN 3: Usar transacción para evitar condiciones de carrera
+                            \DB::transaction(function () use ($user, $membershipPlan, $payment, $paymentId, $userId, $membershipPlanId) {
+                                Log::info('BEFORE: About to process membership for user', [
+                                    'user_id' => $userId, 
+                                    'plan_id' => $membershipPlanId,
+                                    'current_active_memberships' => $user->memberships()->where('is_active', true)->count()
+                                ]);
+                                
+                                // Verificar una vez más dentro de la transacción
+                                $existingActiveMemb = $user->memberships()
+                                    ->where('is_active', true)
+                                    ->where('created_at', '>=', now()->utc()->subMinutes(5))
+                                    ->exists();
+                                
+                                if ($existingActiveMemb) {
+                                    Log::info('Active membership already exists within transaction, skipping', ['user_id' => $userId]);
+                                    return;
+                                }
 
-                            // Crear nueva membresía
-                            $user->memberships()->create([
-                                'membership_plan_id' => $membershipPlan->id,
-                                'starts_at' => now()->utc(),
-                                'ends_at' => now()->utc()->addDays($membershipPlan->duration_days),
-                                'is_active' => true,
-                                'remaining_classes' => $membershipPlan->class_limit,
-                            ]);
-                            Log::info('New membership created for user', ['user_id' => $userId, 'plan_id' => $membershipPlanId]);
+                                // Desactivar cualquier membresía activa existente del usuario
+                                $deactivatedCount = $user->memberships()->where('is_active', true)->update(['is_active' => false]);
+                                Log::info('STEP 1: Existing active memberships deactivated', [
+                                    'user_id' => $userId,
+                                    'deactivated_count' => $deactivatedCount
+                                ]);
 
-                            // Registrar el pago en la base de datos
-                            Payment::create([
-                                'user_id' => $userId,
-                                'membership_plan_id' => $membershipPlanId,
-                                'amount' => $payment->transaction_amount,
-                                'currency' => $payment->currency_id,
-                                'payment_method' => $payment->payment_method_id,
-                                'status' => $payment->status,
-                                'external_id' => $payment->id,
-                                'external_reference' => $payment->external_reference,
-                                'external_status' => $payment->status_detail,
-                                'processed_at' => now()->utc(),
-                                'metadata' => is_array($payment->metadata) ? $payment->metadata : json_decode(json_encode($payment->metadata), true),
-                            ]);
-                            Log::info('Payment recorded in database', ['payment_id' => $paymentId, 'external_id' => $payment->id]);
+                                // Crear nueva membresía
+                                $newMembership = $user->memberships()->create([
+                                    'membership_plan_id' => $membershipPlan->id,
+                                    'starts_at' => now()->utc(),
+                                    'ends_at' => now()->utc()->addDays($membershipPlan->duration_days),
+                                    'is_active' => true,
+                                    'remaining_classes' => $membershipPlan->class_limit,
+                                ]);
+                                Log::info('STEP 2: New membership created', [
+                                    'user_id' => $userId, 
+                                    'plan_id' => $membershipPlanId,
+                                    'new_membership_id' => $newMembership->id,
+                                    'total_active_memberships_after' => $user->memberships()->where('is_active', true)->count()
+                                ]);
+
+                                // Verificar si de alguna manera se crearon múltiples
+                                $activeMemberships = $user->memberships()->where('is_active', true)->get();
+                                if ($activeMemberships->count() > 1) {
+                                    Log::warning('ALERT: Multiple active memberships detected!', [
+                                        'user_id' => $userId,
+                                        'active_memberships' => $activeMemberships->pluck('id')->toArray(),
+                                        'created_at_times' => $activeMemberships->pluck('created_at')->toArray()
+                                    ]);
+                                }
+
+                                // 🔥 PROTECCIÓN 4: Usar updateOrCreate para evitar pagos duplicados
+                                $paymentRecord = Payment::updateOrCreate(
+                                    ['external_id' => $payment->id], // Buscar por external_id
+                                    [
+                                        'user_id' => $userId,
+                                        'membership_plan_id' => $membershipPlanId,
+                                        'amount' => $payment->transaction_amount,
+                                        'currency' => $payment->currency_id,
+                                        'payment_method' => $payment->payment_type_id,
+                                        'status' => $payment->status,
+                                        'external_reference' => $payment->external_reference,
+                                        'external_status' => $payment->status_detail,
+                                        'processed_at' => now()->utc(),
+                                        'metadata' => is_array($payment->metadata) ? $payment->metadata : json_decode(json_encode($payment->metadata), true),
+                                    ]
+                                );
+                                Log::info('STEP 3: Payment recorded in database', [
+                                    'payment_id' => $paymentId, 
+                                    'external_id' => $payment->id,
+                                    'was_created' => $paymentRecord->wasRecentlyCreated
+                                ]);
+                            });
                         } else {
                             Log::warning('User or Membership Plan not found for payment', ['payment_id' => $paymentId, 'user_id' => $userId, 'membership_plan_id' => $membershipPlanId]);
                         }
                     } else {
-                        Log::warning('Missing metadata for payment processing', ['payment_id' => $paymentId, 'metadata' => $metadata]);
+                        Log::warning('Missing metadata for payment processing', ['payment_id' => $paymentId]);
                     }
                 } else if ($payment && ($payment->status === 'pending' || $payment->status === 'in_process')) {
                     Log::info('Payment Pending or In Process', ['payment_id' => $paymentId]);
@@ -192,51 +262,8 @@ class MercadoPagoController extends \App\Http\Controllers\Controller
             }
         }
 
+        return response()->json(['status' => 'ok']);
     }
-
-    /**
-     * Procesar notificación de pago
-     */
-    // private function processPaymentNotification($paymentId)
-    // {
-    //     try {
-    //         // Obtener información del pago desde Mercado Pago
-    //         $payment = \MercadoPago\Payment::find_by_id($paymentId);
-            
-    //         if (!$payment) {
-    //             Log::warning('Pago no encontrado en Mercado Pago', ['payment_id' => $paymentId]);
-    //             return;
-    //         }
-    //         // Buscar el pago en nuestra base de datos
-    //         $localPayment = Payment::where('external_id', $paymentId)->first();
-            
-    //         if (!$localPayment) {
-    //             Log::warning('Pago local no encontrado', ['payment_id' => $paymentId]);
-    //             return;
-    //         }
-    //         // Actualizar estado del pago
-    //         $status = $this->mapMercadoPagoStatus($payment->status);
-    //         $localPayment->update([
-    //             'status' => $status,
-    //             'external_status' => $payment->status,
-    //             'processed_at' => now(),
-    //         ]);
-    //         // Si el pago fue aprobado, activar membresía
-    //         if ($status === 'approved') {
-    //             $this->activateMembership($localPayment);
-    //         }
-    //         Log::info('Pago procesado exitosamente', [
-    //             'payment_id' => $paymentId,
-    //             'status' => $status,
-    //             'user_id' => $localPayment->user_id,
-    //         ]);
-    //     } catch (\Exception $e) {
-    //         Log::error('Error procesando notificación de pago', [
-    //             'payment_id' => $paymentId,
-    //             'error' => $e->getMessage(),
-    //         ]);
-    //     }
-    // }
 
     /**
      * Registra un pago en la base de datos.
@@ -296,38 +323,6 @@ class MercadoPagoController extends \App\Http\Controllers\Controller
 
         return $statusMap[$mpStatus] ?? 'pending';
     }
-
-    /**
-     * Activar membresía del usuario
-     */
-    // private function activateMembership($payment)
-    // {
-    //     try {
-    //         DB::transaction(function () use ($payment) {
-    //             // Crear o actualizar membresía del usuario
-    //             $membership = $payment->user->memberships()->updateOrCreate(
-    //                 ['membership_plan_id' => $payment->membership_plan_id],
-    //                 [
-    //                     'start_date' => now(),
-    //                     'end_date' => now()->addMonth(), // Asumiendo membresía mensual
-    //                     'status' => 'active',
-    //                     'payment_id' => $payment->id,
-    //                 ]
-    //             );
-
-    //             Log::info('Membresía activada', [
-    //                 'user_id' => $payment->user_id,
-    //                 'membership_id' => $membership->id,
-    //                 'payment_id' => $payment->id,
-    //             ]);
-    //         });
-    //     } catch (\Exception $e) {
-    //         Log::error('Error activando membresía', [
-    //             'payment_id' => $payment->id,
-    //             'error' => $e->getMessage(),
-    //         ]);
-    //     }
-    // }
 
     /**
      * Página de éxito
