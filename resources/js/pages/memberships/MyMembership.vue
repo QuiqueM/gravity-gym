@@ -25,7 +25,7 @@ const paymentModal = ref(false);
 const selectedPlan = ref<Plan | null>(null);
 
 const isMembershipExpired = computed(() => {
-  return props.membership.status === 'expired';
+  return !props.membership.is_active;
 });
 
 const { formatDate } = useDates();
@@ -53,7 +53,7 @@ const onPlanSelected = (plan: Plan) => {
         <h3 class="text-lg leading-tight font-bold tracking-[-0.015em] text-white">Membresía Actual</h3>
         <div class="">
           <div class="flex flex-col md:flex-row gap-4 rounded-lg">
-            <div class="flex flex-[2_2_0px] flex-col gap-1">
+            <div class="flex flex-[2_2_0px] flex-col gap-2">
               <p class="text-base leading-tight font-bold text-white">{{ membership.plan.name }}</p>
               <p class="text-sm leading-normal font-normal text-muted-foreground">{{ membership.plan.description }}</p>
               <MessageAlert v-if="isMembershipExpired" title="Membresía Vencida" description="Tu membresía está vencida." type="destructive" />
@@ -95,9 +95,9 @@ const onPlanSelected = (plan: Plan) => {
             <p class="text-sm leading-normal font-normal text-white">15 de Febrero de 2024</p>
           </div>
         </div> -->
-        <h3 class="text-lg leading-tight font-bold tracking-[-0.015em] text-white">Opciones de Membresía
-        </h3>
-        <div class="flex justify-stretch">
+        <div v-if="isMembershipExpired || membership.remaining_classes === 0" class="flex flex-col gap-3">
+          <h3 class="text-lg leading-tight font-bold tracking-[-0.015em] text-white">Opciones de Membresía
+          </h3>
           <div class="flex flex-1 flex-wrap justify-start ">
             <Button variant="default" @click="showMemberships = true">
               <span class="truncate">Renovar Membresía</span>

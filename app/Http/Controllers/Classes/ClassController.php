@@ -179,9 +179,13 @@ class ClassController extends Controller
         // Verificar si la clase requiere membresía y si el usuario tiene una membresía activa
         $class = $schedule->class;
         if ($class->requires_membership) {
-            $activeMembership = $user->membership()->where('is_active', true)->first();
+            $activeMembership = $user->activeMembership();
             if (!$activeMembership) {
                 return back()->withErrors(['error' => 'Esta clase requiere una membresía activa.']);
+            }
+            //validar si todavia tienes clases disponibles
+            if ($activeMembership->remaining_classes === 0) {
+                return back()->withErrors(['error' => 'No tienes clases disponibles en tu membresía.']);
             }
         }
 

@@ -62,7 +62,7 @@ const selectAttendance = (attendance: Registration) => {
           <div class="flex flex-col">
             <span class="font-medium"> {{ registration.class_schedule.class
               .title }} </span>
-            <span class="text-sm text-muted-foreground">Lugar: {{ registration.class_schedule.room }}</span>
+            <!-- <span class="text-sm text-muted-foreground">Lugar: {{ registration.class_schedule.room }}</span> -->
             <span class="text-sm text-muted-foreground">Fecha: {{ formatDateTime(registration.class_schedule.starts_at)
               }}</span>
             <span class="text-sm text-muted-foreground">Coach: {{ registration.class_schedule.class.instructor.name

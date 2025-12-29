@@ -14,7 +14,7 @@ const props = defineProps<{
   auth: Auth
 }>();
 
-const { isAdmin, isCoach } = useRole(props.auth.user.roles);
+const { isAdmin, isCoach, isMember } = useRole(props.auth.user.roles);
 
 const permissions = computed(() => {
   return {
@@ -29,6 +29,22 @@ const breadcrumbs: BreadcrumbItem[] = [
   { title: 'Dashboard', href: '/dashboard' },
   { title: 'Clases', href: '/classes' },
 ];
+
+const classesByInstructor = computed(() => {
+  return props.classes.data.reduce((groups, classItem) => {
+    const instructorName = classItem.instructor?.name || 'Sin instructor asignado';
+    
+    if (!groups[instructorName]) {
+      groups[instructorName] = [];
+    }
+    
+    groups[instructorName].push(classItem);
+    
+    return groups;
+  }, {} as Record<string, Classes[]>);
+});
+
+
 </script>
 
 <template>
@@ -56,7 +72,38 @@ const breadcrumbs: BreadcrumbItem[] = [
           <Button size="sm">Nueva clase</Button>
           </Link>
         </div>
-        <div class="rounded-xl border divide-y">
+        <div v-if="isAdmin || isMember" class="space-y-6">
+          <!-- Vista agrupada por instructor para Admin -->
+          <div v-for="[instructorName, instructorClasses] in Object.entries(classesByInstructor)" 
+               :key="instructorName" 
+               class="space-y-3">
+            <h3 class="text-lg font-medium text-primary border-b pb-2">
+              {{ instructorName }}
+            </h3>
+            <div class="rounded-xl border divide-y">
+              <div v-for="item in instructorClasses" 
+                   :key="item.id" 
+                   class="flex flex-col md:flex-row md:items-center md:justify-between p-3 first:rounded-t-xl last:rounded-b-xl">
+                <div>
+                  <div class="font-medium">{{ item.title }}</div>
+                  <div class="text-sm text-muted-foreground">{{ item.type?.name }}</div>
+                </div>
+                <div class="flex flex-row justify-stretch gap-2 mt-2 md:mt-0">
+                  <Link v-if="permissions.canAssignSchedules" :href="route('classes.edit', item.id)"
+                    class="text-primary">Editar</Link>
+                  <span v-if="permissions.canAssignSchedules" class="text-gray-500">|</span>
+                  <Link v-if="permissions.canAssignSchedules" :href="`/classes/${item.id}/schedules/create`"
+                    class="text-primary">Asignar horarios</Link>
+                  <span v-if="permissions.canAssignSchedules" class="text-gray-500">|</span>
+                  <Link :href="`/classes/${item.id}/schedules`" class="text-primary">Ver horarios</Link>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div v-else-if="isCoach" class="rounded-xl border divide-y">
+          <!-- Vista simple para Coach -->
           <div v-for="item in classes.data" :key="item.id" class="flex flex-col md:flex-row md:items-center md:justify-between p-3">
             <div>
               <div class="font-medium">{{ item.title }}</div>
@@ -65,10 +112,10 @@ const breadcrumbs: BreadcrumbItem[] = [
             <div class="flex flex-row justify-stretch gap-2">
               <Link v-if="permissions.canAssignSchedules" :href="route('classes.edit', item.id)"
                 class="text-primary">Editar</Link>
-              <span class="text-gray-500">|</span>
+              <span v-if="permissions.canAssignSchedules" class="text-gray-500">|</span>
               <Link v-if="permissions.canAssignSchedules" :href="`/classes/${item.id}/schedules/create`"
                 class="text-primary">Asignar horarios</Link>
-              <span class="text-gray-500">|</span>
+              <span v-if="permissions.canAssignSchedules" class="text-gray-500">|</span>
               <Link :href="`/classes/${item.id}/schedules`" class="text-primary">Ver horarios</Link>
             </div>
           </div>

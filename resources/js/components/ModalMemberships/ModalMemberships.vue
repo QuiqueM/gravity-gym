@@ -26,7 +26,7 @@ const selectPlan = (plan: Plan) => {
       <SheetHeader>
         <SheetTitle>Selecciona una Membresía</SheetTitle>
       </SheetHeader>
-      <div class="grid p-4 gap-3">
+      <div class="grid p-4 gap-3 overflow-y-auto">
         <MembershipCard 
           v-for="plan in memberships" 
           :key="plan.id"

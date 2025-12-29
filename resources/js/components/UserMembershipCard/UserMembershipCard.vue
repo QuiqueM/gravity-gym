@@ -1,7 +1,7 @@
 <template>
   <div class="card-container">
-    <div class="flex justify-between items-start ">
-      <img src="https://img.icons8.com/plasticine/100/sim-card-chip.png" alt="Chip" class="w-16 h-auto" />
+    <div class="flex justify-end items-start ">
+      <!-- <img src="https://img.icons8.com/plasticine/100/sim-card-chip.png" alt="Chip" class="w-16 h-auto" /> -->
       
       <div class="logo">
         <img src="/assets/logoNavbar.png" class="w-40" alt="logo gravity">

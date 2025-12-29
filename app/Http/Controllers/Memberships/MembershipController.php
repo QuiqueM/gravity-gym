@@ -91,7 +91,7 @@ class MembershipController extends Controller
         $membership = Membership::with('plan')->where('user_id', $user->id)->latest()->first();
         $plans = MembershipPlan::where('is_active', true)
             ->where('is_membership_initial', false)
-            ->orderBy('price')
+            ->orderBy('price', 'desc')
             ->get();
 
         return Inertia::render('memberships/MyMembership', [
